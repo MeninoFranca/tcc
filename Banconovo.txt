@@ -1,102 +1,6 @@
-Segue minha ideia de sistema
-
-1. Administrador / Coordenação
-Permissões e Ações Detalhadas:
-Cadastrar Usuários (Alunos, Professores, Coordenadores, Administradores)
-
-Como: O administrador pode cadastrar novos usuários através da tabela usuarios. Ele pode preencher os campos necessários, como nome_completo, email, senha, telefone, foto_url e definir o tipo_usuario (Aluno, Professor, Coordenador ou Administrador).
-Fluxo:
-O administrador acessa a interface para cadastrar um novo usuário.
-Preenche as informações do usuário e define o tipo (Aluno, Professor, etc.).
-Ao submeter, as informações são registradas na tabela usuarios.
-Cadastrar Turmas
-
-Como: O administrador pode criar turmas através da tabela turmas. Ele insere o nome da turma e define o turno (Manhã, Tarde ou Noite).
-Fluxo:
-O administrador acessa a tela de cadastro de turmas.
-Escolhe o nome da turma e o turno (Manhã, Tarde ou Noite).
-As informações são salvas na tabela turmas.
-Cadastrar Disciplinas
-
-Como: O administrador pode adicionar novas disciplinas através da tabela disciplinas.
-Fluxo:
-O administrador acessa a tela de cadastro de disciplinas.
-Define o nome da disciplina.
-A disciplina é registrada na tabela disciplinas.
-Associar Alunos a Turmas
-
-Como: O administrador pode matricular alunos em turmas utilizando a tabela alunos_turma. Isso cria uma associação entre o aluno (da tabela usuarios) e a turma (da tabela turmas).
-Fluxo:
-O administrador acessa a interface para associar alunos a turmas.
-Escolhe a turma e o aluno que deve ser matriculado.
-A associação é registrada na tabela alunos_turma.
-Associar Professores a Turmas e Disciplinas
-
-Como: O administrador associa professores a turmas e disciplinas utilizando as tabelas professores_turma e professores_disciplina.
-Fluxo:
-O administrador acessa a interface para associar um professor a uma disciplina e/ou turma.
-Escolhe o professor (usuário), a disciplina e a turma.
-A associação é registrada nas tabelas professores_turma e professores_disciplina.
-Gerar Relatórios de Desempenho
-
-Como: O administrador pode gerar relatórios de desempenho de turmas e disciplinas. Ele pode consultar a tabela relatorios_desempenho para gerar uma visão geral das dificuldades e médias de desempenho dos alunos.
-Fluxo:
-O administrador acessa a tela de geração de relatórios.
-Escolhe a turma e a disciplina.
-O sistema gera um relatório baseado na média de dificuldade relatada pelos alunos e desempenho geral, usando as tabelas relatorios_desempenho e desempenho.
-Visualizar Desempenho dos Alunos
-
-Como: O administrador pode visualizar o desempenho de todos os alunos nas atividades, acessando a tabela desempenho, que contém as notas e feedbacks dos professores para cada aluno.
-Fluxo:
-O administrador acessa a tela de desempenho dos alunos.
-Escolhe a turma, a disciplina e visualiza as notas e feedbacks dos alunos.
-Visualizar Atividades e Registros de Entregas
-
-Como: O administrador pode ver todas as atividades criadas pelos professores e as entregas feitas pelos alunos, acessando as tabelas atividades e registros_atividade.
-Fluxo:
-O administrador acessa a tela de atividades.
-Pode listar todas as atividades de todas as turmas e ver quais alunos entregaram as atividades.
-2. Professor
-Permissões e Ações Detalhadas:
-Exibir Disciplinas e Turmas Associadas
-
-Como: O professor só poderá ver as turmas e disciplinas às quais ele está vinculado, por meio das tabelas professores_turma e professores_disciplina.
-Fluxo:
-O professor acessa a tela de visualização de turmas e disciplinas.
-O sistema filtra as turmas e disciplinas que o professor está associado, com base nas tabelas professores_turma e professores_disciplina.
-Criar Atividades
-
-Como: O professor pode criar atividades associadas às turmas e disciplinas que ele leciona. Ao criar uma atividade, ele define o título, descrição, data de entrega, grau de dificuldade e a turma/disciplina a que se refere. As informações são salvas na tabela atividades.
-Fluxo:
-O professor acessa a tela de criação de atividades.
-Escolhe a turma e disciplina, insere as informações da atividade.
-A atividade é registrada na tabela atividades.
-Exibir Atividades Criadas
-
-Como: O professor pode listar todas as atividades criadas por ele, acessando a tabela atividades, onde ele pode filtrar por turma e disciplina.
-Fluxo:
-O professor acessa a tela de atividades.
-O sistema mostra as atividades vinculadas às turmas e disciplinas associadas ao professor.
-Atribuir Notas e Feedback nas Atividades
-
-Como: O professor pode atribuir notas e feedback para as atividades entregues pelos alunos. As notas e feedbacks são registrados na tabela desempenho.
-Fluxo:
-O professor acessa a tela de correção de atividades.
-Escolhe a atividade e os alunos que entregaram a tarefa.
-O professor atribui uma nota e fornece feedback.
-A nota e o feedback são salvos na tabela desempenho.
-Visualizar Registros de Atividades Entregues
-
-Como: O professor pode visualizar todas as entregas de atividades feitas pelos alunos, acessando os registros na tabela registros_atividade.
-Fluxo:
-O professor acessa a tela de entregas de atividades.
-Visualiza os detalhes de cada entrega, como grau de dificuldade, feedback do aluno, tempo gasto e anexo.
-Visualizar Desempenho dos Alunos nas Atividades
-
-Como: O professor pode visualizar o desempenho dos alunos em todas as atividades, acessando a tabela desempenho, que contém as notas e feedbacks.
-A seguir, detalho o que cada ator (Administrador, Professor e Aluno) pode fazer no sistema, com base no modelo de banco de dados que você tem. Para cada ação, também explico como ela é executada no banco de dados.
-
----
+Leia minha logica para o sistema, Meu banco de dados, e meu back end
+Em seguida FAÇA o front end com react + vite.
+EU QUERO QUE VC FAÇA OQUE EU ESTOU PEDINDO, QUE É O FRONT END, NÃO FAÇA NADA ALEM DISSO.
 
 ### **1. Administrador**
 
@@ -388,3 +292,231 @@ CREATE TABLE desempenho (
     FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina) ON DELETE CASCADE,
     FOREIGN KEY (id_atividade) REFERENCES atividades(id_atividade) ON DELETE CASCADE
 );
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
+const cors = require('cors');
+
+
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.json()); 
+
+
+const db = mysql.createConnection({
+  host: '193.203.175.84',
+  user: 'u721539099_user',
+  password: 'L7OWWJ@9m',
+  database: 'u721539099_agendaescola',
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error('Erro de conexão com o banco de dados: ', err);
+  } else {
+    console.log('Conectado ao banco de dados!');
+  }
+});
+
+
+app.get('/usuarios', (req, res) => {
+  db.query('SELECT * FROM usuarios', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM usuarios WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/usuarios', (req, res) => {
+  const { nome, email } = req.body;
+  db.query('INSERT INTO usuarios (nome, email) VALUES (?, ?)', [nome, email], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: results.insertId, nome, email });
+  });
+});
+
+app.put('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, email } = req.body;
+  db.query('UPDATE usuarios SET nome = ?, email = ? WHERE id = ?', [nome, email, id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Usuário atualizado com sucesso' });
+  });
+});
+
+app.delete('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM usuarios WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Usuário deletado com sucesso' });
+  });
+});
+
+// Rotas de Turmas
+app.get('/turmas', (req, res) => {
+  db.query('SELECT * FROM turmas', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/turmas/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM turmas WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/turmas', (req, res) => {
+  const { nome, turno } = req.body;
+  db.query('INSERT INTO turmas (nome, turno) VALUES (?, ?)', [nome, turno], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: results.insertId, nome, turno });
+  });
+});
+
+app.put('/turmas/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, turno } = req.body;
+  db.query('UPDATE turmas SET nome = ?, turno = ? WHERE id = ?', [nome, turno, id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Turma atualizada com sucesso' });
+  });
+});
+
+app.delete('/turmas/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM turmas WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Turma deletada com sucesso' });
+  });
+});
+
+// Rotas de Disciplinas
+app.get('/disciplinas', (req, res) => {
+  db.query('SELECT * FROM disciplinas', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/disciplinas/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM disciplinas WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/disciplinas', (req, res) => {
+  const { nome } = req.body;
+  db.query('INSERT INTO disciplinas (nome) VALUES (?)', [nome], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: results.insertId, nome });
+  });
+});
+
+app.put('/disciplinas/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome } = req.body;
+  db.query('UPDATE disciplinas SET nome = ? WHERE id = ?', [nome, id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Disciplina atualizada com sucesso' });
+  });
+});
+
+app.delete('/disciplinas/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM disciplinas WHERE id = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: 'Disciplina deletada com sucesso' });
+  });
+});
+
+// Rotas de Atividades
+app.get('/atividades', (req, res) => {
+  db.query('SELECT * FROM atividades', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/atividades', (req, res) => {
+  const { nome, data_inicio, data_fim, id_disciplina } = req.body;
+  db.query('INSERT INTO atividades (nome, data_inicio, data_fim, id_disciplina) VALUES (?, ?, ?, ?)', 
+    [nome, data_inicio, data_fim, id_disciplina], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: results.insertId, nome, data_inicio, data_fim, id_disciplina });
+  });
+});
+
+// Rotas de Desempenhos
+app.get('/desempenhos', (req, res) => {
+  db.query('SELECT * FROM desempenhos', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post('/desempenhos', (req, res) => {
+  const { id_usuario, id_atividade, nota } = req.body;
+  db.query('INSERT INTO desempenhos (id_usuario, id_atividade, nota) VALUES (?, ?, ?)', 
+    [id_usuario, id_atividade, nota], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id: results.insertId, id_usuario, id_atividade, nota });
+  });
+});
+
+const PORT = 5005;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
+

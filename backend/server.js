@@ -1,30 +1,29 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
 const cors = require('cors');
-
+const mysql = require('mysql2');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json()); 
 
-
 const db = mysql.createConnection({
-  host: '193.203.175.84',
-  user: 'u721539099_user',
-  password: 'L7OWWJ@9m',
-  database: 'u721539099_agendaescola',
+  host: 'localhost',              
+  user: 'root',                   
+  password: '',                   
+  database: 'tccdois',      
+  port: 3306                      
 });
 
 db.connect((err) => {
   if (err) {
     console.error('Erro de conexão com o banco de dados: ', err);
+    setTimeout(() => db.connect(), 5000); 
   } else {
     console.log('Conectado ao banco de dados!');
   }
 });
-
 
 app.get('/usuarios', (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
@@ -34,6 +33,7 @@ app.get('/usuarios', (req, res) => {
     res.json(results);
   });
 });
+
 
 app.get('/usuarios/:id', (req, res) => {
   const { id } = req.params;
@@ -46,14 +46,19 @@ app.get('/usuarios/:id', (req, res) => {
 });
 
 app.post('/usuarios', (req, res) => {
-  const { nome, email } = req.body;
-  db.query('INSERT INTO usuarios (nome, email) VALUES (?, ?)', [nome, email], (err, results) => {
+  const { nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status } = req.body;
+
+  const query = `INSERT INTO usuarios (nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome, email });
+    res.status(201).json({ id_usuario: result.insertId });
   });
 });
+
 
 app.put('/usuarios/:id', (req, res) => {
   const { id } = req.params;
@@ -139,7 +144,7 @@ app.get('/disciplinas', (req, res) => {
 
 app.get('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('SELECT * FROM disciplinas WHERE id = ?', [id], (err, results) => {
+  db.query('SELECT * FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -148,19 +153,19 @@ app.get('/disciplinas/:id', (req, res) => {
 });
 
 app.post('/disciplinas', (req, res) => {
-  const { nome } = req.body;
-  db.query('INSERT INTO disciplinas (nome) VALUES (?)', [nome], (err, results) => {
+  const { nome_disciplina } = req.body;
+  db.query('INSERT INTO disciplinas (nome_disciplina) VALUES (?)', [nome_disciplina], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome });
+    res.status(201).json({ id_disciplina: results.insertId });
   });
 });
 
 app.put('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  const { nome } = req.body;
-  db.query('UPDATE disciplinas SET nome = ? WHERE id = ?', [nome, id], (err, results) => {
+  const { nome_disciplina } = req.body;
+  db.query('UPDATE disciplinas SET nome_disciplina = ? WHERE id_disciplina = ?', [nome_disciplina, id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -170,7 +175,7 @@ app.put('/disciplinas/:id', (req, res) => {
 
 app.delete('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM disciplinas WHERE id = ?', [id], (err, results) => {
+  db.query('DELETE FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -178,30 +183,80 @@ app.delete('/disciplinas/:id', (req, res) => {
   });
 });
 
-// Rotas de Atividades
-app.get('/atividades', (req, res) => {
-  db.query('SELECT * FROM atividades', (err, results) => {
+// Associar professores às disciplinas
+app.post('/professores/disciplinas', (req, res) => {
+  const { id_professor, id_disciplina } = req.body;
+  db.query('INSERT INTO professores_disciplina (id_professor, id_disciplina) VALUES (?, ?)', [id_professor, id_disciplina], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results);
+    res.status(201).json({ id_professor_disciplina: result.insertId });
   });
 });
 
+// Associar professores às turmas
+app.post('/professores/turmas', (req, res) => {
+  const { id_professor, id_turma } = req.body;
+  db.query('INSERT INTO professores_turma (id_professor, id_turma) VALUES (?, ?)', [id_professor, id_turma], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_professor_turma: result.insertId });
+  });
+});
+
+// Associar alunos às turmas
+app.post('/alunos/turmas', (req, res) => {
+  const { id_aluno, id_turma } = req.body;
+  db.query('INSERT INTO alunos_turma (id_aluno, id_turma) VALUES (?, ?)', [id_aluno, id_turma], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_aluno_turma: result.insertId });
+  });
+});
+
+// Rota para criar atividades
 app.post('/atividades', (req, res) => {
-  const { nome, data_inicio, data_fim, id_disciplina } = req.body;
-  db.query('INSERT INTO atividades (nome, data_inicio, data_fim, id_disciplina) VALUES (?, ?, ?, ?)', 
-    [nome, data_inicio, data_fim, id_disciplina], (err, results) => {
+  const { id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade } = req.body;
+  const query = `INSERT INTO atividades (id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome, data_inicio, data_fim, id_disciplina });
+    res.status(201).json({ id_atividade: result.insertId });
   });
 });
 
-// Rotas de Desempenhos
-app.get('/desempenhos', (req, res) => {
-  db.query('SELECT * FROM desempenhos', (err, results) => {
+// Rota para registrar atividades feitas pelos alunos
+app.post('/registros-atividade', (req, res) => {
+  const { id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade } = req.body;
+
+  const query = `INSERT INTO registros_atividade (id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(query, [id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_registro: result.insertId });
+  });
+});
+
+// Rota para buscar desempenho de alunos
+app.get('/desempenho/:id_aluno/:id_disciplina', (req, res) => {
+  const { id_aluno, id_disciplina } = req.params;
+
+  const query = `
+    SELECT d.nota, d.feedback_professor, a.titulo AS atividade_titulo
+    FROM desempenho d
+    JOIN atividades a ON d.id_atividade = a.id_atividade
+    WHERE d.id_aluno = ? AND d.id_disciplina = ?
+  `;
+
+  db.query(query, [id_aluno, id_disciplina], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -209,18 +264,38 @@ app.get('/desempenhos', (req, res) => {
   });
 });
 
-app.post('/desempenhos', (req, res) => {
-  const { id_usuario, id_atividade, nota } = req.body;
-  db.query('INSERT INTO desempenhos (id_usuario, id_atividade, nota) VALUES (?, ?, ?)', 
-    [id_usuario, id_atividade, nota], (err, results) => {
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+  console.log('Email:', email);
+  console.log('Senha:', senha); // Certifique-se de que os dados estão sendo recebidos corretamente.
+
+  const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ?';
+
+  db.query(query, [email, senha], (err, results) => { 
     if (err) {
-      return res.status(500).json({ error: err.message });
+      console.error('Erro ao consultar o banco de dados:', err);
+      return res.status(500).json({ success: false, message: 'Erro interno no servidor' });
     }
-    res.status(201).json({ id: results.insertId, id_usuario, id_atividade, nota });
+
+    console.log('Resultados da consulta:', results); // Verifique os resultados da consulta.
+
+    if (results.length > 0) {
+      const usuario = results[0];
+      res.json({
+        success: true,
+        id_usuario: usuario.id_usuario,
+        tipo_usuario: usuario.tipo_usuario,
+        nome_completo: usuario.nome_completo
+      });
+    } else {
+      res.status(400).json({ success: false, message: 'Credenciais inválidas' });
+    }
   });
 });
 
-const PORT = 5005;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+
+
+
+app.listen(5005, () => {
+  console.log('Servidor rodando na porta 5005');
 });

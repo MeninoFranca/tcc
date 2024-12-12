@@ -1,9 +1,9 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Aluno from './pages/Aluno'
-import Professor from './pages/Professor'
-import Administrador from './pages/Administrador'
-import Login from './components/Login'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Aluno from "./pages/Aluno";
+import Professor from "./pages/Professor";
+import Administrador from "./pages/Administrador";
+import Login from "./components/Login";
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/aluno" element={<Aluno />} />
           <Route path="/professor" element={<Professor />} />
-          <Route path="/administrador" element={<Administrador />} />
+          <Route path="/coordenador" element={<Administrador />} />
         </Routes>
       </div>
     </Router>
