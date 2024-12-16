@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Administrador</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <h2 class="my-4">Dashboard do Administrador</h2>
@@ -49,7 +51,7 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- Seção de Cadastro de Turmas -->
         <div class="card mb-4">
             <div class="card-header">
@@ -274,29 +276,43 @@
         async function carregarTurmas() {
             const response = await fetch('http://localhost:5005/turmas');
             const turmas = await response.json();
-            const turmaSelect = document.getElementById('turma_id_aluno');
-            turmaSelect.innerHTML = ''; 
+
+            // Carregar turmas no select de aluno
+            const turmaSelectAluno = document.getElementById('turma_id_aluno');
+            turmaSelectAluno.innerHTML = '';
             turmas.forEach(turma => {
                 const option = document.createElement('option');
                 option.value = turma.id_turma;
                 option.textContent = turma.nome_turma;
-                turmaSelect.appendChild(option);
+                turmaSelectAluno.appendChild(option);
             });
 
-            // Atualizando a tabela de turmas
+            // Carregar turmas no select de professor
+            const turmaSelectProfessor = document.getElementById('turma_id_professor');
+            turmaSelectProfessor.innerHTML = '';
+            turmas.forEach(turma => {
+                const option = document.createElement('option');
+                option.value = turma.id_turma;
+                option.textContent = turma.nome_turma;
+                turmaSelectProfessor.appendChild(option);
+            });
+
+            // Exibir turmas em uma tabela
             const tabelaTurmas = document.getElementById('tabelaTurmas').getElementsByTagName('tbody')[0];
-            tabelaTurmas.innerHTML = ''; 
+            tabelaTurmas.innerHTML = '';
             turmas.forEach(turma => {
                 const row = tabelaTurmas.insertRow();
                 row.innerHTML = `
-                    <td>${turma.id_turma}</td>
-                    <td>${turma.nome_turma}</td>
-                    <td>${turma.turno}</td>
-                    <td>${turma.professores}</td>
-                    <td>${turma.qtd_alunos}</td>
-                `;
+            <td>${turma.id_turma}</td>
+            <td>${turma.nome_turma}</td>
+            <td>${turma.turno}</td>
+            <td>${turma.professores}</td>
+            <td>${turma.qtd_alunos}</td>
+        `;
             });
         }
+
+
 
         // Função para carregar disciplinas
         async function carregarDisciplinas() {
@@ -314,7 +330,7 @@
 
         // Função para carregar professores
         async function carregarProfessores() {
-            const response = await fetch('http://localhost:5005/professores');
+            const response = await fetch('http://localhost:5005/professor');
             const professores = await response.json();
             const professorSelect = document.getElementById('professor_id');
             const professorSelectDisciplina = document.getElementById('professor_id_disciplina');
@@ -395,4 +411,5 @@
         };
     </script>
 </body>
+
 </html>

@@ -55,7 +55,7 @@ app.get('/usuarios', (req, res) => {
 });
 
 app.get('/alunos', (req, res) => {
-  db.query('SELECT * FROM usuarios WHERE tipo_usuario = aluno', (err, results) => {
+  db.query("SELECT * FROM usuarios WHERE tipo_usuario = 'Aluno'", (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -64,7 +64,7 @@ app.get('/alunos', (req, res) => {
 });
 
 app.get('/professor', (req, res) => {
-  db.query('SELECT * FROM usuarios WHERE tipo_usuario = Professor', (err, results) => {
+  db.query("SELECT * FROM usuarios WHERE tipo_usuario = 'Professor'", (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
