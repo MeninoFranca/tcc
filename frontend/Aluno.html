@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Aluno</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Dashboard do Aluno</h2>
+
+        <!-- Seção de Atividades Pendentes -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Atividades Pendentes</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaAtividadesPendentes">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Descrição</th>
+                            <th>Data de Entrega</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados das atividades pendentes serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção de Entregar Atividade -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Entregar Atividade</h5>
+            </div>
+            <div class="card-body">
+                <form id="formEntregarAtividade">
+                    <div class="form-group">
+                        <label for="disciplina_selecionada">Selecione a Disciplina</label>
+                        <select class="form-control" id="disciplina_selecionada" required>
+                            <!-- Disciplinas serão carregadas aqui -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="atividade_id_entrega">Selecione a Atividade</label>
+                        <select class="form-control" id="atividade_id_entrega" required>
+                            <!-- Atividades serão carregadas aqui depois da seleção da disciplina -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grau_dificuldade">Grau de Dificuldade</label>
+                        <select class="form-control" id="grau_dificuldade" required>
+                            <option value="Fácil">Fácil</option>
+                            <option value="Médio">Médio</option>
+                            <option value="Difícil">Difícil</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comentario_dificuldade">Comentário sobre a Dificuldade</label>
+                        <textarea class="form-control" id="comentario_dificuldade" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tempo_gasto">Tempo Gasto (em minutos)</label>
+                        <input type="number" class="form-control" id="tempo_gasto" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="anexo_atividade">Anexo da Atividade</label>
+                        <input type="file" class="form-control" id="anexo_atividade" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Entregar Atividade</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Atividades Entregues -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Atividades Entregues</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaAtividadesEntregues">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Data de Entrega</th>
+                            <th>Nota</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados das atividades entregues serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção de Desempenho nas Atividades -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Desempenho nas Atividades</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaDesempenhoAtividades">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Atividade</th>
+                            <th>Nota</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Desempenho das atividades será carregado aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar as disciplinas do aluno
+        async function carregarDisciplinas() {
+            try {
+                const alunoId = 1; // ID do aluno, pode ser dinâmico
+                const response = await fetch(`http://localhost:5005/professores-disciplina/${alunoId}`);
+                const disciplinas = await response.json();
+
+                const disciplinaSelect = document.getElementById('disciplina_filtro');
+                disciplinaSelect.innerHTML = ''; // Limpa as opções
+
+                disciplinas.forEach(disciplina => {
+                    const option = document.createElement('option');
+                    option.value = disciplina.id_disciplina;
+                    option.textContent = disciplina.nome_disciplina;
+                    disciplinaSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar disciplinas:', error);
+                alert('Erro ao carregar disciplinas. Tente novamente.');
+            }
+        }
+
+        // Função para carregar as atividades baseadas na disciplina selecionada
+        async function carregarAtividadesPorDisciplina(disciplinaId) {
+            try {
+                const alunoId = 1; // ID do aluno, pode ser dinâmico
+                const response = await fetch(`http://localhost:5005/atividades?disciplina_id=${disciplinaId}&aluno_id=${alunoId}`);
+                const atividades = await response.json();
+
+                const atividadeSelect = document.getElementById('atividade_id_entrega');
+                atividadeSelect.innerHTML = ''; // Limpa as opções
+
+                atividades.forEach(atividade => {
+                    const option = document.createElement('option');
+                    option.value = atividade.id_atividade;
+                    option.textContent = atividade.titulo;
+                    atividadeSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar atividades por disciplina:', error);
+                alert('Erro ao carregar atividades. Tente novamente.');
+            }
+        }
+
+        // Função para entregar a atividade
+        document.getElementById('formEntregarAtividade').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const atividadeId = document.getElementById('atividade_id_entrega').value;
+            const grauDificuldade = document.getElementById('grau_dificuldade').value;
+            const comentarioDificuldade = document.getElementById('comentario_dificuldade').value;
+            const tempoGasto = document.getElementById('tempo_gasto').value;
+            const anexoAtividade = document.getElementById('anexo_atividade').files[0];
+
+            const formData = new FormData();
+            formData.append('id_atividade', atividadeId);
+            formData.append('grau_dificuldade', grauDificuldade);
+            formData.append('comentario_dificuldade', comentarioDificuldade);
+            formData.append('tempo_gasto', tempoGasto);
+            formData.append('anexo_atividade', anexoAtividade);
+
+            try {
+                const response = await fetch('http://localhost:5005/entregar-atividade', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Atividade entregue com sucesso!');
+                    carregarAtividadesPendentes(); // Atualiza a lista de atividades pendentes
+                } else {
+                    alert(`Erro: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Erro ao entregar a atividade:', error);
+                alert('Erro ao entregar a atividade. Tente novamente.');
+            }
+        });
+
+        // Função para carregar as atividades pendentes
+        async function carregarAtividadesPendentes() {
+            const disciplinaId = document.getElementById('disciplina_filtro').value; // Obtém o ID da disciplina selecionada
+
+            if (!disciplinaId) {
+                alert('Por favor, selecione uma disciplina para visualizar as atividades.');
+                return;
+            }
+
+            await carregarAtividadesPorDisciplina(disciplinaId); // Carregar as atividades filtradas pela disciplina
+        }
+
+        // Carregar as disciplinas ao carregar a página
+        window.onload = async () => {
+            await carregarDisciplinas(); // Carregar disciplinas do aluno
+            await carregarAtividadesPendentes(); // Carregar as atividades pendentes após selecionar a disciplina
+        };
+
+        // Event listener para o filtro de atividades
+        document.getElementById('btnFiltrar').addEventListener('click', () => {
+            carregarAtividadesPendentes();
+        });
+    </script>
+</body>
+</html>

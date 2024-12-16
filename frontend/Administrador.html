@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Administrador</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Dashboard do Administrador</h2>
+
+        <!-- Seção de Cadastro de Usuários -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Cadastrar Usuário</h5>
+            </div>
+            <div class="card-body">
+                <form id="formCadastrarUsuario">
+                    <div class="form-group">
+                        <label for="nome_completo">Nome Completo</label>
+                        <input type="text" class="form-control" id="nome_completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" class="form-control" id="senha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="text" class="form-control" id="telefone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="foto_url">URL Foto</label>
+                        <input type="text" class="form-control" id="foto_url">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_usuario">Tipo de Usuário</label>
+                        <select class="form-control" id="tipo_usuario" required>
+                            <option value="Aluno">Aluno</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Coordenador">Coordenador</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Seção de Cadastro de Turmas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Cadastrar Turma</h5>
+            </div>
+            <div class="card-body">
+                <form id="formCadastrarTurma">
+                    <div class="form-group">
+                        <label for="nome_turma">Nome da Turma</label>
+                        <input type="text" class="form-control" id="nome_turma" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="turno">Turno</label>
+                        <select class="form-control" id="turno" required>
+                            <option value="Manhã">Manhã</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noite">Noite</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Turma</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Cadastro de Disciplina -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Cadastrar Disciplina</h5>
+            </div>
+            <div class="card-body">
+                <form id="formCadastrarDisciplina">
+                    <div class="form-group">
+                        <label for="nome_disciplina">Nome da Disciplina</label>
+                        <input type="text" class="form-control" id="nome_disciplina" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Disciplina</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Associação Aluno-Turma -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Associar Aluno a Turma</h5>
+            </div>
+            <div class="card-body">
+                <form id="formAssociarAlunoTurma">
+                    <div class="form-group">
+                        <label for="aluno_id">Selecione o Aluno</label>
+                        <select class="form-control" id="aluno_id" required>
+                            <!-- Alunos serão carregados aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="turma_id_aluno">Selecione a Turma</label>
+                        <select class="form-control" id="turma_id_aluno" required>
+                            <!-- Turmas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Associar Aluno a Turma</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Associação Professor-Turma -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Associar Professor a Turma</h5>
+            </div>
+            <div class="card-body">
+                <form id="formAssociarProfessorTurma">
+                    <div class="form-group">
+                        <label for="professor_id">Selecione o Professor</label>
+                        <select class="form-control" id="professor_id" required>
+                            <!-- Professores serão carregados aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="turma_id_professor">Selecione a Turma</label>
+                        <select class="form-control" id="turma_id_professor" required>
+                            <!-- Turmas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Associar Professor a Turma</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Associação Professor-Disciplina -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Associar Professor a Disciplina</h5>
+            </div>
+            <div class="card-body">
+                <form id="formAssociarProfessorDisciplina">
+                    <div class="form-group">
+                        <label for="disciplina_id">Selecione a Disciplina</label>
+                        <select class="form-control" id="disciplina_id" required>
+                            <!-- Disciplinas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="professor_id_disciplina">Selecione o Professor</label>
+                        <select class="form-control" id="professor_id_disciplina" required>
+                            <!-- Professores serão carregados aqui -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Associar Professor a Disciplina</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabelas de Visualização -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Turmas, Professores e Alunos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaTurmas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome da Turma</th>
+                            <th>Turno</th>
+                            <th>Professores</th>
+                            <th>Quantidade de Alunos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados das turmas serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Usuários Cadastrados</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaUsuarios">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados dos usuários serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Funções para carregar dados de Alunos, Turmas, Disciplinas, etc.
+        async function carregarUsuarios() {
+            const response = await fetch('http://localhost:5005/usuarios');
+            const usuarios = await response.json();
+            const tabelaUsuarios = document.getElementById('tabelaUsuarios').getElementsByTagName('tbody')[0];
+            tabelaUsuarios.innerHTML = '';
+            if (usuarios.length === 0) {
+                tabelaUsuarios.innerHTML = '<td colspan="5" class="text-center">Nenhum usuário encontrado</td>';
+            } else {
+                usuarios.forEach(usuario => {
+                    const row = tabelaUsuarios.insertRow();
+                    row.innerHTML = `
+                        <td>${usuario.id_usuario}</td>
+                        <td>${usuario.nome_completo}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.tipo_usuario}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editarUsuario(${usuario.id_usuario})" data-id="${usuario.id_usuario}">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deletarUsuario(${usuario.id_usuario})" data-id="${usuario.id_usuario}">Excluir</button>
+                        </td>
+                    `;
+                });
+            }
+        }
+
+        // Função para editar um usuário
+        async function editarUsuario(idUsuario) {
+            const response = await fetch(`http://localhost:5005/usuarios/${idUsuario}`);
+            const usuario = await response.json();
+            console.log('Editar usuário com dados: ', usuario);
+        }
+
+        // Função para deletar um usuário
+        async function deletarUsuario(idUsuario) {
+            const confirmDelete = confirm('Tem certeza que deseja excluir este usuário?');
+            if (confirmDelete) {
+                const response = await fetch(`http://localhost:5005/usuarios/${idUsuario}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('Usuário excluído com sucesso!');
+                    carregarUsuarios();
+                } else {
+                    alert('Erro ao excluir usuário.');
+                }
+            }
+        }
+
+        // Função para carregar alunos
+        async function carregarAlunos() {
+            const response = await fetch('http://localhost:5005/alunos');
+            const alunos = await response.json();
+            const alunoSelect = document.getElementById('aluno_id');
+            alunoSelect.innerHTML = '';
+            alunos.forEach(aluno => {
+                const option = document.createElement('option');
+                option.value = aluno.id_usuario;
+                option.textContent = aluno.nome_completo;
+                alunoSelect.appendChild(option);
+            });
+        }
+
+        // Função para carregar turmas
+        async function carregarTurmas() {
+            const response = await fetch('http://localhost:5005/turmas');
+            const turmas = await response.json();
+            const turmaSelect = document.getElementById('turma_id_aluno');
+            turmaSelect.innerHTML = ''; 
+            turmas.forEach(turma => {
+                const option = document.createElement('option');
+                option.value = turma.id_turma;
+                option.textContent = turma.nome_turma;
+                turmaSelect.appendChild(option);
+            });
+
+            // Atualizando a tabela de turmas
+            const tabelaTurmas = document.getElementById('tabelaTurmas').getElementsByTagName('tbody')[0];
+            tabelaTurmas.innerHTML = ''; 
+            turmas.forEach(turma => {
+                const row = tabelaTurmas.insertRow();
+                row.innerHTML = `
+                    <td>${turma.id_turma}</td>
+                    <td>${turma.nome_turma}</td>
+                    <td>${turma.turno}</td>
+                    <td>${turma.professores}</td>
+                    <td>${turma.qtd_alunos}</td>
+                `;
+            });
+        }
+
+        // Função para carregar disciplinas
+        async function carregarDisciplinas() {
+            const response = await fetch('http://localhost:5005/disciplinas');
+            const disciplinas = await response.json();
+            const disciplinaSelect = document.getElementById('disciplina_id');
+            disciplinaSelect.innerHTML = '';
+            disciplinas.forEach(disciplina => {
+                const option = document.createElement('option');
+                option.value = disciplina.id_disciplina;
+                option.textContent = disciplina.nome_disciplina;
+                disciplinaSelect.appendChild(option);
+            });
+        }
+
+        // Função para carregar professores
+        async function carregarProfessores() {
+            const response = await fetch('http://localhost:5005/professores');
+            const professores = await response.json();
+            const professorSelect = document.getElementById('professor_id');
+            const professorSelectDisciplina = document.getElementById('professor_id_disciplina');
+            professorSelect.innerHTML = '';
+            professorSelectDisciplina.innerHTML = '';
+            professores.forEach(professor => {
+                const option = document.createElement('option');
+                option.value = professor.id_usuario;
+                option.textContent = professor.nome_completo;
+                professorSelect.appendChild(option);
+                professorSelectDisciplina.appendChild(option.cloneNode(true));
+            });
+        }
+
+        // Função para associar aluno à turma
+        document.getElementById('formAssociarAlunoTurma').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const aluno_id = document.getElementById('aluno_id').value;
+            const turma_id = document.getElementById('turma_id_aluno').value;
+            const response = await fetch('http://localhost:5005/aluno-turma', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_aluno: aluno_id, id_turma: turma_id })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                alert('Aluno associado à turma com sucesso!');
+                carregarTurmas();
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
+        });
+
+        // Função para associar professor à turma
+        document.getElementById('formAssociarProfessorTurma').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const professor_id = document.getElementById('professor_id').value;
+            const turma_id = document.getElementById('turma_id_professor').value;
+            const response = await fetch('http://localhost:5005/professor-turma', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_professor: professor_id, id_turma: turma_id })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                alert('Professor associado à turma com sucesso!');
+                carregarTurmas();
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
+        });
+
+        // Função para associar professor à disciplina
+        document.getElementById('formAssociarProfessorDisciplina').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const professor_id = document.getElementById('professor_id_disciplina').value;
+            const disciplina_id = document.getElementById('disciplina_id').value;
+            const response = await fetch('http://localhost:5005/professor-disciplina', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_professor: professor_id, id_disciplina: disciplina_id })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                alert('Professor associado à disciplina com sucesso!');
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
+        });
+
+        // Carregar os dados na inicialização
+        window.onload = () => {
+            carregarUsuarios();
+            carregarAlunos();
+            carregarTurmas();
+            carregarDisciplinas();
+            carregarProfessores();
+        };
+    </script>
+</body>
+</html>

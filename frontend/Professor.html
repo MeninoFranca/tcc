@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Professor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Dashboard do Professor</h2>
+
+        <!-- Seção de Exibição de Disciplinas e Turmas Associadas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Disciplinas e Turmas Associadas</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaDisciplinasTurmas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome da Turma</th>
+                            <th>Nome da Disciplina</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dados de disciplinas e turmas associadas serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção de Criação de Atividades -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Criar Atividade</h5>
+            </div>
+            <div class="card-body">
+                <form id="formCriarAtividade">
+                    <div class="form-group">
+                        <label for="turma_id_atividade">Selecione a Turma</label>
+                        <select class="form-control" id="turma_id_atividade" required>
+                            <!-- Turmas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="disciplina_id_atividade">Selecione a Disciplina</label>
+                        <select class="form-control" id="disciplina_id_atividade" required>
+                            <!-- Disciplinas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="titulo_atividade">Título</label>
+                        <input type="text" class="form-control" id="titulo_atividade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao_atividade">Descrição</label>
+                        <textarea class="form-control" id="descricao_atividade" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_atividade">Data de Entrega</label>
+                        <input type="date" class="form-control" id="data_atividade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dificuldade_atividade">Dificuldade</label>
+                        <select class="form-control" id="dificuldade_atividade" required>
+                            <option value="Fácil">Fácil</option>
+                            <option value="Média">Média</option>
+                            <option value="Difícil">Difícil</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Criar Atividade</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Exibição de Atividades Criadas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Atividades Criadas</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaAtividadesCriadas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Descrição</th>
+                            <th>Data de Entrega</th>
+                            <th>Dificuldade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Atividades criadas serão carregadas aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção de Atribuição de Notas e Feedback -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Atribuir Notas e Feedback</h5>
+            </div>
+            <div class="card-body">
+                <form id="formAtribuirNotaFeedback">
+                    <div class="form-group">
+                        <label for="turma_id_feedback">Selecione a Turma</label>
+                        <select class="form-control" id="turma_id_feedback" required>
+                            <!-- Turmas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="disciplina_id_feedback">Selecione a Disciplina</label>
+                        <select class="form-control" id="disciplina_id_feedback" required>
+                            <!-- Disciplinas serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="atividade_id_feedback">Selecione a Atividade</label>
+                        <select class="form-control" id="atividade_id_feedback" required>
+                            <!-- Atividades serão carregadas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="aluno_id_feedback">Selecione o Aluno</label>
+                        <select class="form-control" id="aluno_id_feedback" required>
+                            <!-- Alunos serão carregados aqui -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nota_feedback">Nota</label>
+                        <input type="number" class="form-control" id="nota_feedback" min="0" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedback_professor">Feedback</label>
+                        <textarea class="form-control" id="feedback_professor" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Atribuir Nota e Feedback</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Visualização de Desempenho dos Alunos -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Desempenho dos Alunos nas Atividades</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="tabelaDesempenhoAlunos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Aluno</th>
+                            <th>Atividade</th>
+                            <th>Nota</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Desempenho dos alunos será carregado aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar turmas e disciplinas associadas ao professor
+        async function carregarDisciplinasETurmas() {
+            try {
+                // Buscar turmas associadas ao professor
+                const turmasResponse = await fetch('http://localhost:5005/professores-turma/3'); // Use o ID do professor
+                const turmas = await turmasResponse.json();
+                const disciplinasResponse = await fetch('http://localhost:5005/professores-disciplina/3'); // Use o ID do professor
+                const disciplinas = await disciplinasResponse.json();
+
+                const turmaSelect = document.getElementById('turma_id_atividade');
+                turmas.forEach(turma => {
+                    const option = document.createElement('option');
+                    option.value = turma.id_turma;
+                    option.textContent = turma.nome_turma;
+                    turmaSelect.appendChild(option);
+                });
+
+                const disciplinaSelect = document.getElementById('disciplina_id_atividade');
+                disciplinas.forEach(disciplina => {
+                    const option = document.createElement('option');
+                    option.value = disciplina.id_disciplina;
+                    option.textContent = disciplina.nome_disciplina;
+                    disciplinaSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar turmas e disciplinas:', error);
+                alert('Erro ao carregar turmas e disciplinas. Tente novamente.');
+            }
+        }
+
+        // Função para criar atividade
+        document.getElementById('formCriarAtividade').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const turma_id = document.getElementById('turma_id_atividade').value;
+            const disciplina_id = document.getElementById('disciplina_id_atividade').value;
+            const titulo = document.getElementById('titulo_atividade').value;
+            const descricao = document.getElementById('descricao_atividade').value;
+            const data_atividade = document.getElementById('data_atividade').value;
+            const dificuldade = document.getElementById('dificuldade_atividade').value;
+
+            const response = await fetch('http://localhost:5005/atividades', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_turma: turma_id,
+                    id_disciplina: disciplina_id,
+                    titulo,
+                    descricao,
+                    data_atividade,
+                    dificuldade
+                })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('Atividade criada com sucesso!');
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
+        });
+
+        // Função para carregar as atividades criadas
+        async function carregarAtividadesCriadas() {
+            try {
+                const response = await fetch('http://localhost:5005/atividades');
+                const atividades = await response.json();
+
+                const tabelaAtividades = document.getElementById('tabelaAtividadesCriadas').getElementsByTagName('tbody')[0];
+                tabelaAtividades.innerHTML = ''; // Limpa a tabela
+
+                atividades.forEach(atividade => {
+                    const row = tabelaAtividades.insertRow();
+                    row.innerHTML = `
+                        <td>${atividade.id_atividade}</td>
+                        <td>${atividade.titulo}</td>
+                        <td>${atividade.descricao}</td>
+                        <td>${atividade.data_atividade}</td>
+                        <td>${atividade.dificuldade}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" onclick="atribuirNotaFeedback(${atividade.id_atividade})">Atribuir Nota</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar atividades:', error);
+                alert('Erro ao carregar atividades. Tente novamente.');
+            }
+        }
+
+        // Função para atribuir nota e feedback
+        document.getElementById('formAtribuirNotaFeedback').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const turma_id = document.getElementById('turma_id_feedback').value;
+            const disciplina_id = document.getElementById('disciplina_id_feedback').value;
+            const atividade_id = document.getElementById('atividade_id_feedback').value;
+            const aluno_id = document.getElementById('aluno_id_feedback').value;
+            const nota = document.getElementById('nota_feedback').value;
+            const feedback = document.getElementById('feedback_professor').value;
+
+            const response = await fetch('http://localhost:5005/desempenho', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_atividade: atividade_id,
+                    id_aluno: aluno_id,
+                    nota,
+                    feedback_professor: feedback
+                })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('Nota e Feedback atribuídos com sucesso!');
+            } else {
+                alert(`Erro: ${result.error}`);
+            }
+        });
+
+        // Função para carregar os alunos na atribuição de nota
+        async function carregarAlunos() {
+            const response = await fetch('http://localhost:5005/usuarios?tipo=Aluno');
+            const alunos = await response.json();
+
+            const alunoSelect = document.getElementById('aluno_id_feedback');
+            alunos.forEach(aluno => {
+                const option = document.createElement('option');
+                option.value = aluno.id_usuario;
+                option.textContent = aluno.nome_completo;
+                alunoSelect.appendChild(option);
+            });
+        }
+
+        // Carregar as turmas, disciplinas e atividades ao carregar a página
+        window.onload = async () => {
+            await carregarDisciplinasETurmas();
+            await carregarAtividadesCriadas();
+            await carregarAlunos();
+        };
+    </script>
+</body>
+</html>

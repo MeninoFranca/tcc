@@ -1,6 +1,7 @@
-Leia minha logica para o sistema, Meu banco de dados, e meu back end
-Em seguida FAÇA o front end com react + vite.
-EU QUERO QUE VC FAÇA OQUE EU ESTOU PEDINDO, QUE É O FRONT END, NÃO FAÇA NADA ALEM DISSO.
+Leia tudo.
+Meus requisito, meu banco de dados, meu back end
+O back end atende todos os requisitos?
+ 
 
 ### **1. Administrador**
 
@@ -10,72 +11,72 @@ O **Administrador** tem um controle completo sobre o sistema. Suas responsabilid
 
 1. **Cadastrar Usuários (Alunos, Professores, Coordenadores, Administradores):**
    - **Como:** O Administrador acessa a interface para cadastrar novos usuários. Preenche os campos obrigatórios, como nome completo, e-mail, senha, telefone, foto e o tipo de usuário (Aluno, Professor, Coordenador ou Administrador).
-   - **Banco de Dados:** As informações são inseridas na tabela `usuarios`, com a inserção de dados como `nome_completo`, `email`, `senha`, `tipo_usuario`, `telefone`, `foto_url`, e o campo `status` (Ativo/Inativo).
+   - **Banco de Dados:** As informações são inseridas na tabela usuarios, com a inserção de dados como nome_completo, email, senha, tipo_usuario, telefone, foto_url, e o campo status (Ativo/Inativo).
    - **Exemplo de comando:** 
-     ```sql
+ 
      INSERT INTO usuarios (nome_completo, email, senha, tipo_usuario, status) 
      VALUES ('João Silva', 'joao@email.com', 'senha123', 'Professor', 'Ativo');
-     ```
+
 
 2. **Cadastrar Turmas:**
    - **Como:** O Administrador cria turmas e define o turno (Manhã, Tarde ou Noite). Ele escolhe um nome para a turma.
-   - **Banco de Dados:** As informações são armazenadas na tabela `turmas`, incluindo o nome da turma e o turno.
+   - **Banco de Dados:** As informações são armazenadas na tabela turmas, incluindo o nome da turma e o turno.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO turmas (nome_turma, turno) 
      VALUES ('Turma A', 'Manhã');
-     ```
+
 
 3. **Cadastrar Disciplinas:**
    - **Como:** O Administrador cria novas disciplinas no sistema, atribuindo um nome a cada uma delas.
-   - **Banco de Dados:** As informações são registradas na tabela `disciplinas`.
+   - **Banco de Dados:** As informações são registradas na tabela disciplinas.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO disciplinas (nome_disciplina) 
      VALUES ('Matemática');
-     ```
+
 
 4. **Associar Alunos a Turmas:**
-   - **Como:** O Administrador associa alunos às turmas, usando a tabela `alunos_turma`.
+   - **Como:** O Administrador associa alunos às turmas, usando a tabela alunos_turma.
    - **Banco de Dados:** Ele seleciona o aluno e a turma para associá-los.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO alunos_turma (id_aluno, id_turma) 
      VALUES (1, 2);  -- Associa o aluno de id 1 à turma de id 2
-     ```
+
 
 5. **Associar Professores a Turmas e Disciplinas:**
-   - **Como:** O Administrador associa professores a turmas e disciplinas, usando as tabelas `professores_turma` e `professores_disciplina`.
+   - **Como:** O Administrador associa professores a turmas e disciplinas, usando as tabelas professores_turma e professores_disciplina.
    - **Banco de Dados:** Ele seleciona o professor, a turma e a disciplina para associá-los.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO professores_turma (id_professor, id_turma) 
      VALUES (3, 2);  -- Associa o professor de id 3 à turma de id 2
-     ```
+
 
 6. **Gerar Relatórios de Desempenho:**
    - **Como:** O Administrador pode visualizar relatórios de desempenho dos alunos em turmas e disciplinas específicas.
-   - **Banco de Dados:** O relatório é gerado a partir da tabela `desempenho` e/ou `relatorios_desempenho`, consultando as notas e feedbacks de atividades.
+   - **Banco de Dados:** O relatório é gerado a partir da tabela desempenho e/ou relatorios_desempenho, consultando as notas e feedbacks de atividades.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM desempenho WHERE id_turma = 2 AND id_disciplina = 1;
-     ```
+
 
 7. **Visualizar Desempenho dos Alunos:**
    - **Como:** O Administrador pode acessar as notas e feedbacks dos alunos em suas atividades.
-   - **Banco de Dados:** A tabela `desempenho` armazena as notas e feedbacks, que podem ser consultados pelo Administrador.
+   - **Banco de Dados:** A tabela desempenho armazena as notas e feedbacks, que podem ser consultados pelo Administrador.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT id_aluno, nota, feedback_professor FROM desempenho WHERE id_disciplina = 1;
-     ```
+
 
 8. **Visualizar Atividades e Registros de Entregas:**
    - **Como:** O Administrador pode visualizar todas as atividades e os registros de entrega feitos pelos alunos.
-   - **Banco de Dados:** A consulta pode ser feita nas tabelas `atividades` e `registros_atividade`.
+   - **Banco de Dados:** A consulta pode ser feita nas tabelas atividades e registros_atividade.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM atividades WHERE id_turma = 2;
-     ```
+
 
 ---
 
@@ -86,54 +87,54 @@ O **Professor** tem acesso à criação de atividades, correção de atividades,
 #### **Ações Detalhadas:**
 
 1. **Exibir Disciplinas e Turmas Associadas:**
-   - **Como:** O Professor visualiza as turmas e disciplinas em que ele está vinculado, através das tabelas `professores_turma` e `professores_disciplina`.
+   - **Como:** O Professor visualiza as turmas e disciplinas em que ele está vinculado, através das tabelas professores_turma e professores_disciplina.
    - **Banco de Dados:** O sistema filtra as turmas e disciplinas com base na associação do professor.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM professores_turma WHERE id_professor = 3;  -- Visualiza as turmas associadas ao professor
-     ```
+
 
 2. **Criar Atividades:**
    - **Como:** O Professor cria atividades, associando-as a uma turma e uma disciplina, e define o grau de dificuldade.
-   - **Banco de Dados:** As atividades são registradas na tabela `atividades`, incluindo título, descrição, data de entrega e grau de dificuldade.
+   - **Banco de Dados:** As atividades são registradas na tabela atividades, incluindo título, descrição, data de entrega e grau de dificuldade.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO atividades (id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade)
      VALUES (1, 2, 3, 'Prova de Matemática', 'Descrição da prova', '2024-12-20', 'Difícil');
-     ```
+
 
 3. **Exibir Atividades Criadas:**
    - **Como:** O Professor pode visualizar todas as atividades que ele criou, filtradas por turma e disciplina.
-   - **Banco de Dados:** As atividades são consultadas na tabela `atividades`.
+   - **Banco de Dados:** As atividades são consultadas na tabela atividades.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM atividades WHERE id_professor = 3;
-     ```
+
 
 4. **Atribuir Notas e Feedback nas Atividades:**
    - **Como:** O Professor corrige as atividades dos alunos, atribuindo notas e fornecendo feedback.
-   - **Banco de Dados:** As notas e feedbacks são registrados na tabela `desempenho`.
+   - **Banco de Dados:** As notas e feedbacks são registrados na tabela desempenho.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO desempenho (id_aluno, id_disciplina, id_atividade, nota, feedback_professor)
      VALUES (1, 1, 1, 9.0, 'Bom trabalho');
-     ```
+
 
 5. **Visualizar Registros de Atividades Entregues:**
    - **Como:** O Professor visualiza as entregas feitas pelos alunos, verificando comentários de dificuldade e feedback.
-   - **Banco de Dados:** As entregas dos alunos são registradas na tabela `registros_atividade`.
+   - **Banco de Dados:** As entregas dos alunos são registradas na tabela registros_atividade.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM registros_atividade WHERE id_atividade = 1;
-     ```
+
 
 6. **Visualizar Desempenho dos Alunos nas Atividades:**
    - **Como:** O Professor visualiza o desempenho dos alunos nas atividades entregues.
-   - **Banco de Dados:** O desempenho dos alunos é armazenado na tabela `desempenho`.
+   - **Banco de Dados:** O desempenho dos alunos é armazenado na tabela desempenho.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM desempenho WHERE id_atividade = 1;
-     ```
+
 
 ---
 
@@ -145,181 +146,195 @@ O **Aluno** pode se concentrar nas atividades, entrega de tarefas e visualizaç�
 
 1. **Participar de Atividades Associadas à Sua Turma:**
    - **Como:** O Aluno acessa as atividades associadas à sua turma, que são filtradas pelo sistema.
-   - **Banco de Dados:** O sistema consulta a tabela `alunos_turma` para obter as turmas do aluno e, em seguida, exibe as atividades relacionadas.
+   - **Banco de Dados:** O sistema consulta a tabela alunos_turma para obter as turmas do aluno e, em seguida, exibe as atividades relacionadas.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM atividades WHERE id_turma IN (SELECT id_turma FROM alunos_turma WHERE id_aluno = 1);
-     ```
+
 
 2. **Postar (Entregar) Atividades:**
    - **Como:** O Aluno entrega suas atividades, anexando arquivos, selecionando o grau de dificuldade e adicionando um comentário.
-   - **Banco de Dados:** A entrega é registrada na tabela `registros_atividade`, incluindo o arquivo anexado, dificuldade e comentário.
+   - **Banco de Dados:** A entrega é registrada na tabela registros_atividade, incluindo o arquivo anexado, dificuldade e comentário.
    - **Exemplo de comando:**
-     ```sql
+ 
      INSERT INTO registros_atividade (id_atividade, id_aluno, grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade)
      VALUES (1, 1, 'Médio', 'Achei a atividade moderada', 30, 'atividade.pdf');
-     ```
+
 
 3. **Visualizar Atividades Pendentes:**
    - **Como:** O Aluno pode visualizar as atividades que ainda precisa entregar.
    - **Banco de Dados:** O sistema consulta as atividades da turma e filtra as que ainda estão pendentes.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM atividades WHERE id_turma IN (SELECT id_turma FROM alunos_turma WHERE id_aluno = 1) AND id_atividade NOT IN (SELECT id_atividade FROM registros_atividade WHERE id_aluno = 1);
-     ```
+
 
 4. **Visualizar Atividades Entregues:**
    - **Como:** O Aluno pode ver as atividades já entregues, incluindo o feedback e a nota do professor.
-   - **Banco de Dados:** O sistema consulta a tabela `registros_atividade` para mostrar as entregas feitas.
+   - **Banco de Dados:** O sistema consulta a tabela registros_atividade para mostrar as entregas feitas.
    - **Exemplo de comando:**
-     ```sql
+ 
      SELECT * FROM registros_atividade WHERE id_aluno = 1;
-     ```
+
 
 5. **Visualizar Desempenho nas Atividades:**
    - **Como:** O Aluno pode ver as notas e o feedback recebido em suas atividades.
-   - **Banco de Dados:** O desempenho é consultado na tabela `desempenho`.
+   - **Banco de Dados:** O desempenho é consultado na tabela desempenho.
    - **Exemplo de comando:**
-     ```sql
+ 
 
 
      SELECT * FROM desempenho WHERE id_aluno = 1;
-     ```
 
-Esse detalhamento mostra as principais ações de cada ator e como essas ações interagem com o banco de dados, permitindo que o sistema funcione de forma coesa e eficiente para gerenciar turmas, disciplinas, atividades e o desempenho de alunos e professores.
+
+
 
 -- Tabela de usuários
-CREATE TABLE usuarios (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome_completo VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    telefone VARCHAR(15),
-    foto_url VARCHAR(255),
-    sexo ENUM('Masculino', 'Feminino', 'Outro', 'Não informar') DEFAULT 'Não informar',
-    tipo_usuario ENUM('Aluno', 'Professor', 'Coordenador', 'Administrador') NOT NULL DEFAULT 'Aluno',
-    status ENUM('Ativo', 'Inativo') DEFAULT 'Ativo',  -- Campo para controlar o status
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE alunos_turma (
+  id_aluno_turma int(11) NOT NULL AUTO_INCREMENT,
+  id_aluno int(11) DEFAULT NULL,
+  id_turma int(11) DEFAULT NULL,
+  PRIMARY KEY (id_aluno_turma),
+  UNIQUE KEY id_aluno (id_aluno,id_turma),
+  KEY id_turma (id_turma),
+  CONSTRAINT alunos_turma_ibfk_1 FOREIGN KEY (id_aluno) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT alunos_turma_ibfk_2 FOREIGN KEY (id_turma) REFERENCES turmas (id_turma) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE atividades (
+  id_atividade int(11) NOT NULL AUTO_INCREMENT,
+  id_disciplina int(11) DEFAULT NULL,
+  id_turma int(11) DEFAULT NULL,
+  id_professor int(11) DEFAULT NULL,
+  titulo varchar(255) NOT NULL,
+  descricao text NOT NULL,
+  data_atividade date NOT NULL,
+  dificuldade enum('Fácil','Médio','Difícil') NOT NULL,
+  data_criacao timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id_atividade),
+  KEY id_disciplina (id_disciplina),
+  KEY id_turma (id_turma),
+  KEY id_professor (id_professor),
+  CONSTRAINT atividades_ibfk_1 FOREIGN KEY (id_disciplina) REFERENCES disciplinas (id_disciplina) ON DELETE CASCADE,
+  CONSTRAINT atividades_ibfk_2 FOREIGN KEY (id_turma) REFERENCES turmas (id_turma) ON DELETE CASCADE,
+  CONSTRAINT atividades_ibfk_3 FOREIGN KEY (id_professor) REFERENCES usuarios (id_usuario) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE desempenho (
+  id_desempenho int(11) NOT NULL AUTO_INCREMENT,
+  id_aluno int(11) DEFAULT NULL,
+  id_disciplina int(11) DEFAULT NULL,
+  id_atividade int(11) DEFAULT NULL,
+  nota decimal(5,2) DEFAULT NULL,
+  feedback_professor text DEFAULT NULL,
+  data_registro timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id_desempenho),
+  KEY id_aluno (id_aluno),
+  KEY id_disciplina (id_disciplina),
+  KEY id_atividade (id_atividade),
+  CONSTRAINT desempenho_ibfk_1 FOREIGN KEY (id_aluno) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT desempenho_ibfk_2 FOREIGN KEY (id_disciplina) REFERENCES disciplinas (id_disciplina) ON DELETE CASCADE,
+  CONSTRAINT desempenho_ibfk_3 FOREIGN KEY (id_atividade) REFERENCES atividades (id_atividade) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE disciplinas (
-    id_disciplina INT AUTO_INCREMENT PRIMARY KEY,
-    nome_disciplina VARCHAR(255) NOT NULL
-);
-
--- Tabela de turmas
-CREATE TABLE turmas (
-    id_turma INT AUTO_INCREMENT PRIMARY KEY,
-    nome_turma VARCHAR(100) NOT NULL,
-    turno ENUM('Manhã', 'Tarde', 'Noite') NOT NULL, -- Adicionando o campo turno
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
+  id_disciplina int(11) NOT NULL AUTO_INCREMENT,
+  nome_disciplina varchar(255) NOT NULL,
+  PRIMARY KEY (id_disciplina)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE professores_disciplina (
-    id_professor_disciplina INT AUTO_INCREMENT PRIMARY KEY,
-    id_professor INT,
-    id_disciplina INT,
-    FOREIGN KEY (id_professor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina) ON DELETE CASCADE,
-    UNIQUE (id_professor, id_disciplina)  -- Garantindo que um professor não seja associado à mesma disciplina mais de uma vez
-);
+  id_professor_disciplina int(11) NOT NULL AUTO_INCREMENT,
+  id_professor int(11) DEFAULT NULL,
+  id_disciplina int(11) DEFAULT NULL,
+  PRIMARY KEY (id_professor_disciplina),
+  UNIQUE KEY id_professor (id_professor,id_disciplina),
+  KEY id_disciplina (id_disciplina),
+  CONSTRAINT professores_disciplina_ibfk_1 FOREIGN KEY (id_professor) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT professores_disciplina_ibfk_2 FOREIGN KEY (id_disciplina) REFERENCES disciplinas (id_disciplina) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE professores_turma (
-    id_professor_turma INT AUTO_INCREMENT PRIMARY KEY,
-    id_professor INT,
-    id_turma INT,
-    FOREIGN KEY (id_professor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_turma) REFERENCES turmas(id_turma) ON DELETE CASCADE,
-    UNIQUE (id_professor, id_turma)
-);
+  id_professor_turma int(11) NOT NULL AUTO_INCREMENT,
+  id_professor int(11) DEFAULT NULL,
+  id_turma int(11) DEFAULT NULL,
+  PRIMARY KEY (id_professor_turma),
+  UNIQUE KEY id_professor (id_professor,id_turma),
+  KEY id_turma (id_turma),
+  CONSTRAINT professores_turma_ibfk_1 FOREIGN KEY (id_professor) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT professores_turma_ibfk_2 FOREIGN KEY (id_turma) REFERENCES turmas (id_turma) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
--- Tabela para associar alunos às turmas
-CREATE TABLE alunos_turma (
-    id_aluno_turma INT AUTO_INCREMENT PRIMARY KEY,
-    id_aluno INT,
-    id_turma INT,
-    FOREIGN KEY (id_aluno) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_turma) REFERENCES turmas(id_turma) ON DELETE CASCADE,
-    UNIQUE (id_aluno, id_turma)
-);
-
--- Tabela de atividades
-CREATE TABLE atividades (
-    id_atividade INT AUTO_INCREMENT PRIMARY KEY,
-    id_disciplina INT,
-    id_turma INT,
-    id_professor INT,
-    titulo VARCHAR(255) NOT NULL,
-    descricao TEXT NOT NULL,
-    data_atividade DATE NOT NULL,
-    dificuldade ENUM('Fácil', 'Médio', 'Difícil') NOT NULL,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina) ON DELETE CASCADE,
-    FOREIGN KEY (id_turma) REFERENCES turmas(id_turma) ON DELETE CASCADE,
-    FOREIGN KEY (id_professor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
-);
-
--- Tabela de registros de atividades feitas pelos alunos
 CREATE TABLE registros_atividade (
-    id_registro INT AUTO_INCREMENT PRIMARY KEY,
-    id_atividade INT,
-    id_aluno INT,
-    id_disciplina INT,  -- Nova coluna para associar a disciplina
-    grau_dificuldade ENUM('Baixa', 'Moderada', 'Alta') NOT NULL,
-    comentario_dificuldade TEXT,
-    tempo_gasto INT, -- Tempo gasto em minutos
-    feedback_professor TEXT,
-    anexo_atividade VARCHAR(255),
-    data_entrega TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_atividade) REFERENCES atividades(id_atividade) ON DELETE CASCADE,
-    FOREIGN KEY (id_aluno) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina) ON DELETE CASCADE
-);
+  id_registro int(11) NOT NULL AUTO_INCREMENT,
+  id_atividade int(11) DEFAULT NULL,
+  id_aluno int(11) DEFAULT NULL,
+  id_disciplina int(11) DEFAULT NULL,
+  grau_dificuldade enum('Baixa','Moderada','Alta') NOT NULL,
+  comentario_dificuldade text DEFAULT NULL,
+  tempo_gasto int(11) DEFAULT NULL,
+  feedback_professor text DEFAULT NULL,
+  anexo_atividade varchar(255) DEFAULT NULL,
+  data_entrega timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id_registro),
+  KEY id_atividade (id_atividade),
+  KEY id_aluno (id_aluno),
+  KEY id_disciplina (id_disciplina),
+  CONSTRAINT registros_atividade_ibfk_1 FOREIGN KEY (id_atividade) REFERENCES atividades (id_atividade) ON DELETE CASCADE,
+  CONSTRAINT registros_atividade_ibfk_2 FOREIGN KEY (id_aluno) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+  CONSTRAINT registros_atividade_ibfk_3 FOREIGN KEY (id_disciplina) REFERENCES disciplinas (id_disciplina) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabela de desempenho dos alunos (finalização das atividades)
-CREATE TABLE desempenho (
-    id_desempenho INT AUTO_INCREMENT PRIMARY KEY,
-    id_aluno INT,
-    id_disciplina INT,
-    id_atividade INT,  -- Nova coluna para associar a atividade ao desempenho
-    nota DECIMAL(5, 2),
-    feedback_professor TEXT,
-    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_aluno) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_disciplina) ON DELETE CASCADE,
-    FOREIGN KEY (id_atividade) REFERENCES atividades(id_atividade) ON DELETE CASCADE
-);
+CREATE TABLE turmas (
+  id_turma int(11) NOT NULL AUTO_INCREMENT,
+  nome_turma varchar(100) NOT NULL,
+  turno enum('Manhã','Tarde','Noite') NOT NULL,
+  data_criacao timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id_turma)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE usuarios (
+  id_usuario int(11) NOT NULL AUTO_INCREMENT,
+  nome_completo varchar(255) NOT NULL,
+  email varchar(255) NOT NULL,
+  senha varchar(255) NOT NULL,
+  telefone varchar(15) DEFAULT NULL,
+  foto_url varchar(255) DEFAULT NULL,
+  sexo enum('Masculino','Feminino','Outro','Não informar') DEFAULT 'Não informar',
+  tipo_usuario enum('Aluno','Professor','Coordenador','Administrador') NOT NULL DEFAULT 'Aluno',
+  status enum('Ativo','Inativo') DEFAULT 'Ativo',
+  data_criacao timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id_usuario),
+  UNIQUE KEY email (email)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
 const cors = require('cors');
-
+const mysql = require('mysql2');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json()); 
 
-
 const db = mysql.createConnection({
-  host: '193.203.175.84',
-  user: 'u721539099_user',
-  password: 'L7OWWJ@9m',
-  database: 'u721539099_agendaescola',
+  host: 'localhost',              
+  user: 'root',                   
+  password: '',                   
+  database: 'tccdois',      
+  port: 3306                      
 });
 
 db.connect((err) => {
   if (err) {
     console.error('Erro de conexão com o banco de dados: ', err);
+    setTimeout(() => db.connect(), 5000); 
   } else {
     console.log('Conectado ao banco de dados!');
   }
 });
-
 
 app.get('/usuarios', (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
@@ -329,6 +344,7 @@ app.get('/usuarios', (req, res) => {
     res.json(results);
   });
 });
+
 
 app.get('/usuarios/:id', (req, res) => {
   const { id } = req.params;
@@ -341,14 +357,19 @@ app.get('/usuarios/:id', (req, res) => {
 });
 
 app.post('/usuarios', (req, res) => {
-  const { nome, email } = req.body;
-  db.query('INSERT INTO usuarios (nome, email) VALUES (?, ?)', [nome, email], (err, results) => {
+  const { nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status } = req.body;
+
+  const query = INSERT INTO usuarios (nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+  db.query(query, [nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome, email });
+    res.status(201).json({ id_usuario: result.insertId });
   });
 });
+
 
 app.put('/usuarios/:id', (req, res) => {
   const { id } = req.params;
@@ -371,7 +392,6 @@ app.delete('/usuarios/:id', (req, res) => {
   });
 });
 
-// Rotas de Turmas
 app.get('/turmas', (req, res) => {
   db.query('SELECT * FROM turmas', (err, results) => {
     if (err) {
@@ -422,7 +442,6 @@ app.delete('/turmas/:id', (req, res) => {
   });
 });
 
-// Rotas de Disciplinas
 app.get('/disciplinas', (req, res) => {
   db.query('SELECT * FROM disciplinas', (err, results) => {
     if (err) {
@@ -434,7 +453,7 @@ app.get('/disciplinas', (req, res) => {
 
 app.get('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('SELECT * FROM disciplinas WHERE id = ?', [id], (err, results) => {
+  db.query('SELECT * FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -443,19 +462,19 @@ app.get('/disciplinas/:id', (req, res) => {
 });
 
 app.post('/disciplinas', (req, res) => {
-  const { nome } = req.body;
-  db.query('INSERT INTO disciplinas (nome) VALUES (?)', [nome], (err, results) => {
+  const { nome_disciplina } = req.body;
+  db.query('INSERT INTO disciplinas (nome_disciplina) VALUES (?)', [nome_disciplina], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome });
+    res.status(201).json({ id_disciplina: results.insertId });
   });
 });
 
 app.put('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  const { nome } = req.body;
-  db.query('UPDATE disciplinas SET nome = ? WHERE id = ?', [nome, id], (err, results) => {
+  const { nome_disciplina } = req.body;
+  db.query('UPDATE disciplinas SET nome_disciplina = ? WHERE id_disciplina = ?', [nome_disciplina, id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -465,7 +484,7 @@ app.put('/disciplinas/:id', (req, res) => {
 
 app.delete('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM disciplinas WHERE id = ?', [id], (err, results) => {
+  db.query('DELETE FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -473,30 +492,75 @@ app.delete('/disciplinas/:id', (req, res) => {
   });
 });
 
-// Rotas de Atividades
-app.get('/atividades', (req, res) => {
-  db.query('SELECT * FROM atividades', (err, results) => {
+app.post('/professores/disciplinas', (req, res) => {
+  const { id_professor, id_disciplina } = req.body;
+  db.query('INSERT INTO professores_disciplina (id_professor, id_disciplina) VALUES (?, ?)', [id_professor, id_disciplina], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results);
+    res.status(201).json({ id_professor_disciplina: result.insertId });
+  });
+});
+
+app.post('/professores/turmas', (req, res) => {
+  const { id_professor, id_turma } = req.body;
+  db.query('INSERT INTO professores_turma (id_professor, id_turma) VALUES (?, ?)', [id_professor, id_turma], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_professor_turma: result.insertId });
+  });
+});
+
+
+app.post('/alunos/turmas', (req, res) => {
+  const { id_aluno, id_turma } = req.body;
+  db.query('INSERT INTO alunos_turma (id_aluno, id_turma) VALUES (?, ?)', [id_aluno, id_turma], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_aluno_turma: result.insertId });
   });
 });
 
 app.post('/atividades', (req, res) => {
-  const { nome, data_inicio, data_fim, id_disciplina } = req.body;
-  db.query('INSERT INTO atividades (nome, data_inicio, data_fim, id_disciplina) VALUES (?, ?, ?, ?)', 
-    [nome, data_inicio, data_fim, id_disciplina], (err, results) => {
+  const { id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade } = req.body;
+  const query = INSERT INTO atividades (id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade)
+                 VALUES (?, ?, ?, ?, ?, ?, ?);
+
+  db.query(query, [id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id: results.insertId, nome, data_inicio, data_fim, id_disciplina });
+    res.status(201).json({ id_atividade: result.insertId });
   });
 });
 
-// Rotas de Desempenhos
-app.get('/desempenhos', (req, res) => {
-  db.query('SELECT * FROM desempenhos', (err, results) => {
+app.post('/registros-atividade', (req, res) => {
+  const { id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade } = req.body;
+
+  const query = INSERT INTO registros_atividade (id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+  db.query(query, [id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ id_registro: result.insertId });
+  });
+});
+
+app.get('/desempenho/:id_aluno/:id_disciplina', (req, res) => {
+  const { id_aluno, id_disciplina } = req.params;
+
+  const query = 
+    SELECT d.nota, d.feedback_professor, a.titulo AS atividade_titulo
+    FROM desempenho d
+    JOIN atividades a ON d.id_atividade = a.id_atividade
+    WHERE d.id_aluno = ? AND d.id_disciplina = ?
+  ;
+
+  db.query(query, [id_aluno, id_disciplina], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -504,19 +568,35 @@ app.get('/desempenhos', (req, res) => {
   });
 });
 
-app.post('/desempenhos', (req, res) => {
-  const { id_usuario, id_atividade, nota } = req.body;
-  db.query('INSERT INTO desempenhos (id_usuario, id_atividade, nota) VALUES (?, ?, ?)', 
-    [id_usuario, id_atividade, nota], (err, results) => {
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+  console.log('Email:', email);
+  console.log('Senha:', senha);
+
+  const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ?';
+
+  db.query(query, [email, senha], (err, results) => { 
     if (err) {
-      return res.status(500).json({ error: err.message });
+      console.error('Erro ao consultar o banco de dados:', err);
+      return res.status(500).json({ success: false, message: 'Erro interno no servidor' });
     }
-    res.status(201).json({ id: results.insertId, id_usuario, id_atividade, nota });
+
+    console.log('Resultados da consulta:', results);
+
+    if (results.length > 0) {
+      const usuario = results[0];
+      res.json({
+        success: true,
+        id_usuario: usuario.id_usuario,
+        tipo_usuario: usuario.tipo_usuario,
+        nome_completo: usuario.nome_completo
+      });
+    } else {
+      res.status(400).json({ success: false, message: 'Credenciais inválidas' });
+    }
   });
 });
 
-const PORT = 5005;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-
+app.listen(5005, () => {
+  console.log('Servidor rodando na porta 5005');
+})

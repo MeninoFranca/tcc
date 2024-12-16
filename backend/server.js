@@ -25,6 +25,26 @@ db.connect((err) => {
   }
 });
 
+// POST: Criar usuário (Aluno, Professor, Coordenador)
+app.post('/usuarios', (req, res) => {
+  const { nome_completo, email, senha, telefone, foto_url, tipo_usuario } = req.body;
+
+  if (!['Aluno', 'Professor', 'Coordenador'].includes(tipo_usuario)) {
+    return res.status(400).json({ error: 'Tipo de usuário inválido' });
+  }
+
+  db.query(
+    'INSERT INTO usuarios (nome_completo, email, senha, telefone, foto_url, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?)',
+    [nome_completo, email, senha, telefone, foto_url, tipo_usuario],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'Usuário criado com sucesso', id: result.insertId });
+    }
+  );
+});
+
 app.get('/usuarios', (req, res) => {
   db.query('SELECT * FROM usuarios', (err, results) => {
     if (err) {
@@ -34,10 +54,8 @@ app.get('/usuarios', (req, res) => {
   });
 });
 
-
-app.get('/usuarios/:id', (req, res) => {
-  const { id } = req.params;
-  db.query('SELECT * FROM usuarios WHERE id = ?', [id], (err, results) => {
+app.get('/alunos', (req, res) => {
+  db.query('SELECT * FROM usuarios WHERE tipo_usuario = aluno', (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -45,43 +63,78 @@ app.get('/usuarios/:id', (req, res) => {
   });
 });
 
-app.post('/usuarios', (req, res) => {
-  const { nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status } = req.body;
-
-  const query = `INSERT INTO usuarios (nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(query, [nome_completo, email, senha, telefone, foto_url, sexo, tipo_usuario, status], (err, result) => {
+app.get('/professor', (req, res) => {
+  db.query('SELECT * FROM usuarios WHERE tipo_usuario = Professor', (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.status(201).json({ id_usuario: result.insertId });
+    res.json(results);
   });
 });
 
-
-app.put('/usuarios/:id', (req, res) => {
+app.get('/usuarios/:id', (req, res) => {
   const { id } = req.params;
-  const { nome, email } = req.body;
-  db.query('UPDATE usuarios SET nome = ?, email = ? WHERE id = ?', [nome, email, id], (err, results) => {
+  db.query('SELECT * FROM usuarios WHERE id_usuario = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json({ message: 'Usuário atualizado com sucesso' });
+    res.json(results);
   });
+});
+
+app.put('/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome_completo, email, senha, telefone, foto_url, tipo_usuario } = req.body;
+
+  db.query(
+    'UPDATE usuarios SET nome_completo = ?, email = ?, senha = ?, telefone = ?, foto_url = ?, tipo_usuario = ? WHERE id_usuario = ?',
+    [nome_completo, email, senha, telefone, foto_url, tipo_usuario, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+      res.json({ message: 'Usuário atualizado com sucesso!' });
+    }
+  );
 });
 
 app.delete('/usuarios/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM usuarios WHERE id = ?', [id], (err, results) => {
+
+  db.query('DELETE FROM usuarios WHERE id_usuario = ?', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json({ message: 'Usuário deletado com sucesso' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    res.json({ message: 'Usuário deletado com sucesso!' });
   });
 });
 
-// Rotas de Turmas
+
+// POST: Criar Turma
+app.post('/turmas', (req, res) => {
+  const { nome_turma, turno } = req.body;
+
+  if (!['Manhã', 'Tarde', 'Noite'].includes(turno)) {
+    return res.status(400).json({ error: 'Turno inválido' });
+  }
+
+  db.query(
+    'INSERT INTO turmas (nome_turma, turno) VALUES (?, ?)',
+    [nome_turma, turno],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'Turma criada com sucesso', id: result.insertId });
+    }
+  );
+});
 app.get('/turmas', (req, res) => {
   db.query('SELECT * FROM turmas', (err, results) => {
     if (err) {
@@ -90,49 +143,63 @@ app.get('/turmas', (req, res) => {
     res.json(results);
   });
 });
-
 app.get('/turmas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('SELECT * FROM turmas WHERE id = ?', [id], (err, results) => {
+  db.query('SELECT * FROM turmas WHERE id_turma = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     res.json(results);
   });
 });
-
-app.post('/turmas', (req, res) => {
-  const { nome, turno } = req.body;
-  db.query('INSERT INTO turmas (nome, turno) VALUES (?, ?)', [nome, turno], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(201).json({ id: results.insertId, nome, turno });
-  });
-});
-
 app.put('/turmas/:id', (req, res) => {
   const { id } = req.params;
-  const { nome, turno } = req.body;
-  db.query('UPDATE turmas SET nome = ?, turno = ? WHERE id = ?', [nome, turno, id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ message: 'Turma atualizada com sucesso' });
-  });
-});
+  const { nome_turma, turno } = req.body;
 
+  db.query(
+    'UPDATE turmas SET nome_turma = ?, turno = ? WHERE id_turma = ?',
+    [nome_turma, turno, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Turma não encontrada' });
+      }
+      res.json({ message: 'Turma atualizada com sucesso!' });
+    }
+  );
+});
 app.delete('/turmas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM turmas WHERE id = ?', [id], (err, results) => {
+
+  db.query('DELETE FROM turmas WHERE id_turma = ?', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json({ message: 'Turma deletada com sucesso' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Turma não encontrada' });
+    }
+    res.json({ message: 'Turma deletada com sucesso!' });
   });
 });
 
-// Rotas de Disciplinas
+
+// POST: Criar Disciplina
+app.post('/disciplinas', (req, res) => {
+  const { nome_disciplina } = req.body;
+
+  db.query(
+    'INSERT INTO disciplinas (nome_disciplina) VALUES (?)',
+    [nome_disciplina],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'Disciplina criada com sucesso', id: result.insertId });
+    }
+  );
+});
 app.get('/disciplinas', (req, res) => {
   db.query('SELECT * FROM disciplinas', (err, results) => {
     if (err) {
@@ -141,7 +208,6 @@ app.get('/disciplinas', (req, res) => {
     res.json(results);
   });
 });
-
 app.get('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
   db.query('SELECT * FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
@@ -151,150 +217,390 @@ app.get('/disciplinas/:id', (req, res) => {
     res.json(results);
   });
 });
-
-app.post('/disciplinas', (req, res) => {
-  const { nome_disciplina } = req.body;
-  db.query('INSERT INTO disciplinas (nome_disciplina) VALUES (?)', [nome_disciplina], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(201).json({ id_disciplina: results.insertId });
-  });
-});
-
 app.put('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
   const { nome_disciplina } = req.body;
-  db.query('UPDATE disciplinas SET nome_disciplina = ? WHERE id_disciplina = ?', [nome_disciplina, id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ message: 'Disciplina atualizada com sucesso' });
-  });
-});
 
+  db.query(
+    'UPDATE disciplinas SET nome_disciplina = ? WHERE id_disciplina = ?',
+    [nome_disciplina, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Disciplina não encontrada' });
+      }
+      res.json({ message: 'Disciplina atualizada com sucesso!' });
+    }
+  );
+});
 app.delete('/disciplinas/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM disciplinas WHERE id_disciplina = ?', [id], (err, results) => {
+
+  db.query('DELETE FROM disciplinas WHERE id_disciplina = ?', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json({ message: 'Disciplina deletada com sucesso' });
-  });
-});
-
-// Associar professores às disciplinas
-app.post('/professores/disciplinas', (req, res) => {
-  const { id_professor, id_disciplina } = req.body;
-  db.query('INSERT INTO professores_disciplina (id_professor, id_disciplina) VALUES (?, ?)', [id_professor, id_disciplina], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Disciplina não encontrada' });
     }
-    res.status(201).json({ id_professor_disciplina: result.insertId });
+    res.json({ message: 'Disciplina deletada com sucesso!' });
   });
 });
 
-// Associar professores às turmas
-app.post('/professores/turmas', (req, res) => {
+
+// POST: Associar Professor a Turma
+app.post('/professor-turma', (req, res) => {
   const { id_professor, id_turma } = req.body;
-  db.query('INSERT INTO professores_turma (id_professor, id_turma) VALUES (?, ?)', [id_professor, id_turma], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+
+  db.query(
+    'SELECT * FROM professores_turma WHERE id_professor = ? AND id_turma = ?',
+    [id_professor, id_turma],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ error: 'Professor já associado a essa turma' });
+      }
+
+      db.query(
+        'INSERT INTO professores_turma (id_professor, id_turma) VALUES (?, ?)',
+        [id_professor, id_turma],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          res.status(201).json({ message: 'Professor associado à turma com sucesso', id: result.insertId });
+        }
+      );
     }
-    res.status(201).json({ id_professor_turma: result.insertId });
-  });
+  );
 });
-
-// Associar alunos às turmas
-app.post('/alunos/turmas', (req, res) => {
-  const { id_aluno, id_turma } = req.body;
-  db.query('INSERT INTO alunos_turma (id_aluno, id_turma) VALUES (?, ?)', [id_aluno, id_turma], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(201).json({ id_aluno_turma: result.insertId });
-  });
-});
-
-// Rota para criar atividades
-app.post('/atividades', (req, res) => {
-  const { id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade } = req.body;
-  const query = `INSERT INTO atividades (id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(query, [id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(201).json({ id_atividade: result.insertId });
-  });
-});
-
-// Rota para registrar atividades feitas pelos alunos
-app.post('/registros-atividade', (req, res) => {
-  const { id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade } = req.body;
-
-  const query = `INSERT INTO registros_atividade (id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(query, [id_atividade, id_aluno, id_disciplina, grau_dificuldade, comentario_dificuldade, tempo_gasto, feedback_professor, anexo_atividade], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(201).json({ id_registro: result.insertId });
-  });
-});
-
-// Rota para buscar desempenho de alunos
-app.get('/desempenho/:id_aluno/:id_disciplina', (req, res) => {
-  const { id_aluno, id_disciplina } = req.params;
-
-  const query = `
-    SELECT d.nota, d.feedback_professor, a.titulo AS atividade_titulo
-    FROM desempenho d
-    JOIN atividades a ON d.id_atividade = a.id_atividade
-    WHERE d.id_aluno = ? AND d.id_disciplina = ?
-  `;
-
-  db.query(query, [id_aluno, id_disciplina], (err, results) => {
+app.get('/professores-turma/:id_turma', (req, res) => {
+  const { id_turma } = req.params;
+  db.query('SELECT * FROM professores_turma WHERE id_turma = ?', [id_turma], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     res.json(results);
   });
 });
+app.put('/professor-turma/:id', (req, res) => {
+  const { id } = req.params;
+  const { id_professor, id_turma } = req.body;
 
-app.post('/login', (req, res) => {
-  const { email, senha } = req.body;
-  console.log('Email:', email);
-  console.log('Senha:', senha); // Certifique-se de que os dados estão sendo recebidos corretamente.
+  db.query(
+    'UPDATE professores_turma SET id_professor = ?, id_turma = ? WHERE id_professor_turma = ?',
+    [id_professor, id_turma, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Associação não encontrada' });
+      }
+      res.json({ message: 'Associação de professor e turma atualizada com sucesso!' });
+    }
+  );
+});
 
-  const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ?';
+app.delete('/professor-turma', (req, res) => {
+  const { id_professor, id_turma } = req.body;
 
-  db.query(query, [email, senha], (err, results) => { 
+  db.query(
+    'DELETE FROM professores_turma WHERE id_professor = ? AND id_turma = ?',
+    [id_professor, id_turma],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Associação não encontrada' });
+      }
+      res.json({ message: 'Associação professor-turma deletada com sucesso!' });
+    }
+  );
+});
+
+
+// POST: Associar Professor a Disciplina
+app.post('/professor-disciplina', (req, res) => {
+  const { id_professor, id_disciplina } = req.body;
+
+  db.query(
+    'SELECT * FROM professores_disciplina WHERE id_professor = ? AND id_disciplina = ?',
+    [id_professor, id_disciplina],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ error: 'Professor já associado a essa disciplina' });
+      }
+
+      db.query(
+        'INSERT INTO professores_disciplina (id_professor, id_disciplina) VALUES (?, ?)',
+        [id_professor, id_disciplina],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          res.status(201).json({ message: 'Professor associado à disciplina com sucesso', id: result.insertId });
+        }
+      );
+    }
+  );
+});
+app.get('/professores-disciplina/:id_disciplina', (req, res) => {
+  const { id_disciplina } = req.params;
+  db.query('SELECT * FROM professores_disciplina WHERE id_disciplina = ?', [id_disciplina], (err, results) => {
     if (err) {
-      console.error('Erro ao consultar o banco de dados:', err);
-      return res.status(500).json({ success: false, message: 'Erro interno no servidor' });
+      return res.status(500).json({ error: err.message });
     }
+    res.json(results);
+  });
+});
+app.put('/professor-disciplina/:id', (req, res) => {
+  const { id } = req.params;
+  const { id_professor, id_disciplina } = req.body;
 
-    console.log('Resultados da consulta:', results); // Verifique os resultados da consulta.
-
-    if (results.length > 0) {
-      const usuario = results[0];
-      res.json({
-        success: true,
-        id_usuario: usuario.id_usuario,
-        tipo_usuario: usuario.tipo_usuario,
-        nome_completo: usuario.nome_completo
-      });
-    } else {
-      res.status(400).json({ success: false, message: 'Credenciais inválidas' });
+  db.query(
+    'UPDATE professores_disciplina SET id_professor = ?, id_disciplina = ? WHERE id_professor_disciplina = ?',
+    [id_professor, id_disciplina, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Associação não encontrada' });
+      }
+      res.json({ message: 'Associação de professor e disciplina atualizada com sucesso!' });
     }
+  );
+});
+app.delete('/professor-disciplina', (req, res) => {
+  const { id_professor, id_disciplina } = req.body;
+
+  db.query(
+    'DELETE FROM professores_disciplina WHERE id_professor = ? AND id_disciplina = ?',
+    [id_professor, id_disciplina],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Associação não encontrada' });
+      }
+      res.json({ message: 'Associação professor-disciplina deletada com sucesso!' });
+    }
+  );
+});
+
+
+// POST: Associar Aluno a Turma
+app.post('/aluno-turma', (req, res) => {
+  const { id_aluno, id_turma } = req.body;
+
+  db.query(
+    'SELECT * FROM alunos_turma WHERE id_aluno = ? AND id_turma = ?',
+    [id_aluno, id_turma],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ error: 'Aluno já associado a essa turma' });
+      }
+
+      db.query(
+        'INSERT INTO alunos_turma (id_aluno, id_turma) VALUES (?, ?)',
+        [id_aluno, id_turma],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          res.status(201).json({ message: 'Aluno associado à turma com sucesso', id: result.insertId });
+        }
+      );
+    }
+  );
+});
+app.get('/alunos-turma/:id_turma', (req, res) => {
+  const { id_turma } = req.params;
+  db.query('SELECT * FROM alunos_turma WHERE id_turma = ?', [id_turma], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.get('/alunos/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM alunos_turma WHERE id_aluno = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.delete('/aluno-turma', (req, res) => {
+  const { id_aluno, id_turma } = req.body;
+
+  db.query(
+    'DELETE FROM alunos_turma WHERE id_aluno = ? AND id_turma = ?',
+    [id_aluno, id_turma],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Associação não encontrada' });
+      }
+      res.json({ message: 'Associação aluno-turma deletada com sucesso!' });
+    }
+  );
+});
+
+
+// POST: Criar Atividade
+app.post('/atividades', (req, res) => {
+  const { id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade } = req.body;
+
+  db.query(
+    'INSERT INTO atividades (id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [id_disciplina, id_turma, id_professor, titulo, descricao, data_atividade, dificuldade],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'Atividade criada com sucesso', id: result.insertId });
+    }
+  );
+});
+app.get('/atividades', (req, res) => {
+  db.query('SELECT * FROM atividades', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.get('/atividades/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM atividades WHERE id_atividade = ?', [id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.put('/atividades/:id', (req, res) => {
+  const { id } = req.params;
+  const { id_disciplina, id_turma, id_professor, titulo, descricao, grau_dificuldade } = req.body;
+
+  db.query(
+    'UPDATE atividades SET id_disciplina = ?, id_turma = ?, id_professor = ?, titulo = ?, descricao = ?, grau_dificuldade = ? WHERE id_atividade = ?',
+    [id_disciplina, id_turma, id_professor, titulo, descricao, grau_dificuldade, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Atividade não encontrada' });
+      }
+      res.json({ message: 'Atividade atualizada com sucesso!' });
+    }
+  );
+});
+app.delete('/atividades/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.query('DELETE FROM atividades WHERE id_atividade = ?', [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Atividade não encontrada' });
+    }
+    res.json({ message: 'Atividade deletada com sucesso!' });
   });
 });
 
 
+// POST: Entregar Atividade (Aluno)
+app.post('/entregar-atividade', (req, res) => {
+  const { id_atividade, id_aluno, grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade } = req.body;
 
+  db.query(
+    'INSERT INTO registros_atividade (id_atividade, id_aluno, grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade) VALUES (?, ?, ?, ?, ?, ?)',
+    [id_atividade, id_aluno, grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.status(201).json({ message: 'Atividade entregue com sucesso', id: result.insertId });
+    }
+  );
+});
+app.get('/registros-atividade', (req, res) => {
+  db.query('SELECT * FROM registros_atividade', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+app.put('/entregar-atividade/:id', (req, res) => {
+  const { id } = req.params;
+  const { grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade } = req.body;
+
+  db.query(
+    'UPDATE registros_atividade SET grau_dificuldade = ?, comentario_dificuldade = ?, tempo_gasto = ?, anexo_atividade = ? WHERE id_registro_atividade = ?',
+    [grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade, id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Entrega de atividade não encontrada' });
+      }
+      res.json({ message: 'Entrega de atividade atualizada com sucesso!' });
+    }
+  );
+});
+app.post('/login', (req, res) => {
+  const { usuario, senha } = req.body;
+
+  const query = `
+    SELECT id_usuario, tipo_usuario
+    FROM Usuarios
+    WHERE (email = ? OR nome_completo = ?)
+    AND senha = ?;
+  `;
+  db.execute(query, [usuario, usuario, senha], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Erro ao realizar o login. Tente novamente.' });
+    }
+
+    if (results.length === 0) {
+      return res.status(400).json({ error: 'Usuário não encontrado ou senha incorreta!' });
+    }
+
+    const user = results[0]; 
+
+    return res.status(200).json({
+      message: 'Autenticação bem-sucedida!',
+      id: user.id_usuario,
+      tipo_usuario: user.tipo_usuario.toLowerCase(), 
+    });
+  });
+});
 
 app.listen(5005, () => {
   console.log('Servidor rodando na porta 5005');

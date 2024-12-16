@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card p-4" style="width: 400px;">
+            <h4 class="card-title text-center mb-4">Login</h4>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" class="form-control" id="email" placeholder="Digite seu e-mail" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" class="form-control" id="password" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+      
+                const response = await fetch('http://localhost:5005/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        usuario: email,  // Envia o e-mail como 'usuario'
+                        senha: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Captura o tipo de usuário após login
+                    const tipoUsuario = data.tipo_usuario;
+
+                    // Redireciona para a página HTML correspondente com base no tipo de usuário
+                    switch (tipoUsuario) {
+                        case 'coordenador':
+                            window.location.href = 'administrador.html';  // Redireciona para a página do Administrador
+                            break;
+                        case 'professor':
+                            window.location.href = 'professor.html';  // Redireciona para a página do Professor
+                            break;
+                        case 'aluno':
+                            window.location.href = 'aluno.html';  // Redireciona para a página do Aluno
+                            break;
+                        default:
+                            alert('Tipo de usuário inválido');
+                            break;
+                    }
+                } else {
+                    alert(`Erro: ${data.error}`);
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                alert('Erro ao tentar realizar login. Tente novamente.');
+            }
+        });
+
+        
+    </script>
+</body>
+</html>
