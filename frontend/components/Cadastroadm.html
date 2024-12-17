@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro - Administrador</title>
+    <script src="script.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h2 class="my-4">Cadastro - Administrador</h2>
+
+      <!-- Cadastro de Usuário -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Cadastrar Usuário</h5>
+        </div>
+        <div class="card-body">
+          <form id="formCadastrarUsuario">
+            <div class="form-group">
+              <label for="nome_completo">Nome Completo</label>
+              <input type="text" class="form-control" id="nome_completo" required />
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" class="form-control" id="email" required />
+            </div>
+            <div class="form-group">
+              <label for="senha">Senha</label>
+              <input type="password" class="form-control" id="senha" required />
+            </div>
+            <div class="form-group">
+              <label for="telefone">Telefone</label>
+              <input type="text" class="form-control" id="telefone" required />
+            </div>
+            <div class="form-group">
+              <label for="foto_url">URL Foto</label>
+              <input type="text" class="form-control" id="foto_url" />
+            </div>
+            <div class="form-group">
+              <label for="tipo_usuario">Tipo de Usuário</label>
+              <select class="form-control" id="tipo_usuario" required>
+                <option value="Aluno">Aluno</option>
+                <option value="Professor">Professor</option>
+                <option value="Coordenador">Coordenador</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Cadastro de Turma -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Cadastrar Turma</h5>
+        </div>
+        <div class="card-body">
+          <form id="formCadastrarTurma">
+            <div class="form-group">
+              <label for="nome_turma">Nome da Turma</label>
+              <input type="text" class="form-control" id="nome_turma" required />
+            </div>
+            <div class="form-group">
+              <label for="turno">Turno</label>
+              <select class="form-control" id="turno" required>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar Turma</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Cadastro de Disciplina -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Cadastrar Disciplina</h5>
+        </div>
+        <div class="card-body">
+          <form id="formCadastrarDisciplina">
+            <div class="form-group">
+              <label for="nome_disciplina">Nome da Disciplina</label>
+              <input type="text" class="form-control" id="nome_disciplina" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar Disciplina</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+   
+  </body>
+  <script>
+    document.getElementById('formCadastrarUsuario').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // Captura os valores dos campos do formulário
+        const nomeCompleto = document.getElementById('nome_completo').value;
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const telefone = document.getElementById('telefone').value;
+        const fotoUrl = document.getElementById('foto_url').value;
+        const tipoUsuario = document.getElementById('tipo_usuario').value;
+
+        // Cria um objeto com os dados do formulário
+        const usuarioData = {
+          nome_completo: nomeCompleto,
+          email: email,
+          senha: senha,
+          telefone: telefone,
+          foto_url: fotoUrl,
+          tipo_usuario: tipoUsuario,
+        };
+
+        try {
+          // Envia a requisição POST para o servidor
+          const response = await fetch('http://localhost:5005/usuarios', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(usuarioData),
+          });
+
+          // Verifica se a resposta foi bem-sucedida
+          if (!response.ok) {
+            throw new Error('Falha ao cadastrar usuário');
+          }
+
+          // Converte a resposta em formato JSON
+          const result = await response.json();
+
+          // Exibe uma mensagem de sucesso
+          alert(result.message || 'Usuário cadastrado com sucesso!');
+        } catch (error) {
+          // Exibe uma mensagem de erro
+          alert(error.message || 'Erro ao cadastrar usuário');
+        }
+      });
+// Função para cadastrar turma
+document
+  .getElementById("formCadastrarTurma")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const nomeTurma = document.getElementById("nome_turma").value;
+    const turno = document.getElementById("turno").value;
+
+    fetch("http://localhost:5005/turmas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nome_turma: nomeTurma,
+        turno: turno,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert("Erro: " + data.error);
+        } else {
+          alert(data.message);
+          // Limpar o formulário após o envio
+          document.getElementById("formCadastrarTurma").reset();
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao cadastrar turma:", error);
+        alert("Erro ao cadastrar turma. Tente novamente.");
+      });
+  });
+
+// Função para cadastrar disciplina
+document
+  .getElementById("formCadastrarDisciplina")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const nomeDisciplina = document.getElementById("nome_disciplina").value;
+
+    fetch("http://localhost:5005/disciplinas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nome_disciplina: nomeDisciplina,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert("Erro: " + data.error);
+        } else {
+          alert(data.message);
+          // Limpar o formulário após o envio
+          document.getElementById("formCadastrarDisciplina").reset();
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao cadastrar disciplina:", error);
+        alert("Erro ao cadastrar disciplina. Tente novamente.");
+      });
+  });
+
+  </script>
+</html>

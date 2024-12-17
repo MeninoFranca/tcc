@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Administrador</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Tabelas de Visualização -->
+      <div class="card mb-4 mt-3">
+        <div class="card-header">
+          <h5>Usuários Cadastrados</h5>
+        </div>
+        <div class="card-body">
+          <table class="table" id="tabelaUsuarios">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dados dos usuários serão carregados aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal de Edição de Usuário -->
+      <div class="modal" tabindex="-1" role="dialog" id="editarModal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Usuário</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="formEditarUsuario">
+                <div class="form-group">
+                  <label for="nome_completo">Nome Completo</label>
+                  <input type="text" class="form-control" id="nome_completo" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" required />
+                </div>
+                <div class="form-group">
+                  <label for="telefone">Telefone</label>
+                  <input type="text" class="form-control" id="telefone" required />
+                </div>
+                <div class="form-group">
+                  <label for="tipo_usuario">Tipo</label>
+                  <select class="form-control" id="tipo_usuario" required>
+                    <option value="Aluno">Aluno</option>
+                    <option value="Professor">Professor</option>
+                    <option value="Coordenador">Coordenador</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar alterações</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1>Dashboards</h1>
+    </div>
+
+    <script>
+      async function carregarUsuarios() {
+        const response = await fetch("http://localhost:5005/usuarios");
+        const usuarios = await response.json();
+        const tabelaUsuarios = document
+          .getElementById("tabelaUsuarios")
+          .getElementsByTagName("tbody")[0];
+        tabelaUsuarios.innerHTML = "";
+        if (usuarios.length === 0) {
+          tabelaUsuarios.innerHTML =
+            '<td colspan="5" class="text-center">Nenhum usuário encontrado</td>';
+        } else {
+          usuarios.forEach((usuario) => {
+            const row = tabelaUsuarios.insertRow();
+            row.innerHTML = `
+                        <td>${usuario.id_usuario}</td>
+                        <td>${usuario.nome_completo}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.tipo_usuario}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editarUsuario(${usuario.id_usuario})" data-id="${usuario.id_usuario}">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deletarUsuario(${usuario.id_usuario})" data-id="${usuario.id_usuario}">Excluir</button>
+                        </td>
+                    `;
+          });
+        }
+      }
+
+      // Função para editar um usuário
+      async function editarUsuario(idUsuario) {
+        const response = await fetch(
+          `http://localhost:5005/usuarios/${idUsuario}`
+        );
+        const usuario = await response.json();
+        
+        // Preencher o formulário de edição com os dados do usuário
+        document.getElementById("nome_completo").value = usuario.nome_completo;
+        document.getElementById("email").value = usuario.email;
+        document.getElementById("telefone").value = usuario.telefone;
+        document.getElementById("tipo_usuario").value = usuario.tipo_usuario;
+
+        // Exibir o modal de edição
+        $('#editarModal').modal('show');
+
+        // Definir a ação de envio do formulário
+        const form = document.getElementById("formEditarUsuario");
+        form.onsubmit = async (event) => {
+          event.preventDefault();
+
+          // Capturar os dados do formulário
+          const nome_completo = document.getElementById("nome_completo").value;
+          const email = document.getElementById("email").value;
+          const telefone = document.getElementById("telefone").value;
+          const tipo_usuario = document.getElementById("tipo_usuario").value;
+
+          // Enviar os dados via PUT para atualizar o usuário
+          const response = await fetch(
+            `http://localhost:5005/usuarios/${idUsuario}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                nome_completo,
+                email,
+                telefone,
+                tipo_usuario,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            alert("Usuário atualizado com sucesso!");
+            $('#editarModal').modal('hide'); // Fechar o modal
+            carregarUsuarios(); // Atualizar a tabela de usuários
+          } else {
+            alert("Erro ao atualizar o usuário.");
+          }
+        };
+      }
+
+      // Função para deletar um usuário
+      async function deletarUsuario(idUsuario) {
+        const confirmDelete = confirm(
+          "Tem certeza que deseja excluir este usuário?"
+        );
+        if (confirmDelete) {
+          const response = await fetch(
+            `http://localhost:5005/usuarios/${idUsuario}`,
+            { method: "DELETE" }
+          );
+          if (response.ok) {
+            alert("Usuário excluído com sucesso!");
+            carregarUsuarios();
+          } else {
+            alert("Erro ao excluir usuário.");
+          }
+        }
+      }
+
+      window.onload = () => {
+        carregarUsuarios();
+      };
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
