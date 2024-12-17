@@ -279,15 +279,26 @@ app.post('/professor-turma', (req, res) => {
     }
   );
 });
-app.get('/professores-turma/:id_turma', (req, res) => {
-  const { id_turma } = req.params;
-  db.query('SELECT * FROM professores_turma WHERE id_turma = ?', [id_turma], (err, results) => {
+
+app.get('/professores-turma/p/:id_professor', (req, res) => {
+  const { id_professor } = req.params;
+  db.query('SELECT * FROM professores_turma WHERE id_professor = ?', [id_professor], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     res.json(results);
   });
 });
+app.get('/professores-disciplina/p/:id_professor', (req, res) => {
+  const { id_professor } = req.params;
+  db.query('SELECT * FROM professores_disciplina WHERE id_professor = ?', [id_professor], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
 app.put('/professor-turma/:id', (req, res) => {
   const { id } = req.params;
   const { id_professor, id_turma } = req.body;
@@ -355,15 +366,7 @@ app.post('/professor-disciplina', (req, res) => {
     }
   );
 });
-app.get('/professores-disciplina/:id_disciplina', (req, res) => {
-  const { id_disciplina } = req.params;
-  db.query('SELECT * FROM professores_disciplina WHERE id_disciplina = ?', [id_disciplina], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(results);
-  });
-});
+
 app.put('/professor-disciplina/:id', (req, res) => {
   const { id } = req.params;
   const { id_professor, id_disciplina } = req.body;
@@ -492,7 +495,7 @@ app.get('/atividades', (req, res) => {
 });
 app.get('/atividades/:id', (req, res) => {
   const { id } = req.params;
-  db.query('SELECT * FROM atividades WHERE id_atividade = ?', [id], (err, results) => {
+  db.query('SELECT * FROM atividades WHERE id_professor = ?', [id], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -548,13 +551,16 @@ app.post('/entregar-atividade', (req, res) => {
   );
 });
 app.get('/registros-atividade', (req, res) => {
-  db.query('SELECT * FROM registros_atividade', (err, results) => {
+  const { id_atividade } = req.query; // Para receber o id da atividade como query
+  const query = 'SELECT * FROM registros_atividade WHERE id_atividade = ?';
+  db.query(query, [id_atividade], (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     res.json(results);
   });
 });
+
 app.put('/entregar-atividade/:id', (req, res) => {
   const { id } = req.params;
   const { grau_dificuldade, comentario_dificuldade, tempo_gasto, anexo_atividade } = req.body;
@@ -582,11 +588,15 @@ app.post('/login', (req, res) => {
     WHERE (email = ? OR nome_completo = ?)
     AND senha = ?;
   `;
+
   db.execute(query, [usuario, usuario, senha], (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: 'Erro ao realizar o login. Tente novamente.' });
     }
+
+    // Verifique o resultado da consulta
+    console.log('Resultado da consulta:', results);
 
     if (results.length === 0) {
       return res.status(400).json({ error: 'Usuário não encontrado ou senha incorreta!' });
@@ -594,13 +604,84 @@ app.post('/login', (req, res) => {
 
     const user = results[0]; 
 
+    // Verifique se os campos id_usuario e tipo_usuario estão presentes
+    if (!user.id_usuario || !user.tipo_usuario) {
+      return res.status(400).json({ error: 'Dados incompletos do usuário!' });
+    }
+
     return res.status(200).json({
       message: 'Autenticação bem-sucedida!',
-      id: user.id_usuario,
-      tipo_usuario: user.tipo_usuario.toLowerCase(), 
+      id_usuario: user.id_usuario,  // Retorne id_usuario corretamente
+      tipo_usuario: user.tipo_usuario.toLowerCase(),
     });
   });
 });
+
+// 1. Criar um desempenho (Create)
+app.post('/desempenho', (req, res) => {
+  const { id_aluno, id_disciplina, id_atividade, nota, feedback_professor } = req.body;
+
+  const query = `INSERT INTO desempenho (id_aluno, id_disciplina, id_atividade, nota, feedback_professor) VALUES (?, ?, ?, ?, ?)`;
+  db.query(query, [id_aluno, id_disciplina, id_atividade, nota, feedback_professor], (err, result) => {
+    if (err) {
+      console.error('Erro ao inserir desempenho: ', err);
+      return res.status(500).json({ message: 'Erro ao inserir desempenho' });
+    }
+    res.status(201).json({ id_desempenho: result.insertId });
+  });
+});
+
+// 2. Ler um desempenho (Read)
+app.get('/desempenho/:id', (req, res) => {
+  const id = req.params.id;
+  const query = 'SELECT * FROM desempenho WHERE id_desempenho = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Erro ao buscar desempenho: ', err);
+      return res.status(500).json({ message: 'Erro ao buscar desempenho' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Desempenho não encontrado' });
+    }
+    res.status(200).json(result[0]);
+  });
+});
+
+// 3. Atualizar um desempenho (Update)
+app.put('/desempenho/:id', (req, res) => {
+  const id = req.params.id;
+  const { id_aluno, id_disciplina, id_atividade, nota, feedback_professor } = req.body;
+
+  const query = `UPDATE desempenho SET id_aluno = ?, id_disciplina = ?, id_atividade = ?, nota = ?, feedback_professor = ? WHERE id_desempenho = ?`;
+  db.query(query, [id_aluno, id_disciplina, id_atividade, nota, feedback_professor, id], (err, result) => {
+    if (err) {
+      console.error('Erro ao atualizar desempenho: ', err);
+      return res.status(500).json({ message: 'Erro ao atualizar desempenho' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Desempenho não encontrado' });
+    }
+    res.status(200).json({ message: 'Desempenho atualizado com sucesso' });
+  });
+});
+
+// 4. Deletar um desempenho (Delete)
+app.delete('/desempenho/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = 'DELETE FROM desempenho WHERE id_desempenho = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Erro ao deletar desempenho: ', err);
+      return res.status(500).json({ message: 'Erro ao deletar desempenho' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Desempenho não encontrado' });
+    }
+    res.status(200).json({ message: 'Desempenho deletado com sucesso' });
+  });
+});
+
 
 app.listen(5005, () => {
   console.log('Servidor rodando na porta 5005');
