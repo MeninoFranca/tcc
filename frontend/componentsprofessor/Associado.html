@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Professor</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="my-4">Dashboard do Professor</h2>
+
+      <!-- Seção de Exibição de Disciplinas e Turmas Associadas -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Disciplinas e Turmas Associadas</h5>
+        </div>
+        <div class="card-body">
+          <table class="table" id="tabelaDisciplinasTurmas">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome da Turma</th>
+                <th>Nome da Disciplina</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dados de disciplinas e turmas associadas serão carregados aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        
+        async function carregarDisciplinasETurmas() {
+          const idProfessor = localStorage.getItem("id_professor"); 
+          if (!idProfessor) {
+            console.error("ID do professor não encontrado!");
+            return;
+          }
+      
+          try {
+            // Primeira requisição: obter as turmas associadas ao professor
+            const turmasResponse = await fetch(`http://localhost:5005/professores-turma/p/${idProfessor}`);
+            const turmas = await turmasResponse.json();
+      
+            // Segunda requisição: obter as disciplinas associadas ao professor
+            const disciplinasResponse = await fetch(`http://localhost:5005/professores-disciplina/p/${idProfessor}`);
+            const disciplinas = await disciplinasResponse.json();
+      
+            // Preencher a tabela com os dados de turmas e disciplinas
+            const tabelaBody = document.querySelector("#tabelaDisciplinasTurmas tbody");
+            tabelaBody.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
+      
+            for (const turma of turmas) {
+              // Obter o nome da turma usando o id_turma
+              const turmaResponse = await fetch(`http://localhost:5005/turmas/${turma.id_turma}`);
+              const turmaData = await turmaResponse.json();
+      
+              for (const disciplina of disciplinas) {
+                // Obter o nome da disciplina usando o id_disciplina
+                const disciplinaResponse = await fetch(`http://localhost:5005/disciplinas/${disciplina.id_disciplina}`);
+                const disciplinaData = await disciplinaResponse.json();
+      
+                // Adiciona uma linha na tabela para a turma e a disciplina associada
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${turma.id_turma}</td>
+                  <td>${turmaData[0].nome_turma}</td>
+                  <td>${disciplinaData[0].nome_disciplina}</td>
+                `;
+                tabelaBody.appendChild(row);
+              }
+            }
+          } catch (error) {
+            console.error("Erro ao carregar turmas e disciplinas:", error);
+          }
+        }
+      
+        // Carrega os dados assim que a página for carregada
+        window.onload = carregarDisciplinasETurmas;
+      </script>
+      
+  </body>
+</html>

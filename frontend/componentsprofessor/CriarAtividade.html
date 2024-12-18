@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Professor</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Criar Atividade</h5>
+        </div>
+        <div class="card-body">
+          <form id="formCriarAtividade">
+            <div class="form-group">
+              <label for="turma_id_atividade">Selecione a Turma</label>
+              <select class="form-control" id="turma_id_atividade" required>
+                <!-- Turmas serão carregadas aqui -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="disciplina_id_atividade">Selecione a Disciplina</label>
+              <select class="form-control" id="disciplina_id_atividade" required>
+                <!-- Disciplinas serão carregadas aqui -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="titulo_atividade">Título</label>
+              <input
+                type="text"
+                class="form-control"
+                id="titulo_atividade"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="descricao_atividade">Descrição</label>
+              <textarea
+                class="form-control"
+                id="descricao_atividade"
+                required
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="data_atividade">Data de Entrega</label>
+              <input
+                type="date"
+                class="form-control"
+                id="data_atividade"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="dificuldade_atividade">Dificuldade</label>
+              <select class="form-control" id="dificuldade_atividade" required>
+                <option value="Fácil">Fácil</option>
+                <option value="Médio">Média</option>
+                <option value="Difícil">Difícil</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Criar Atividade
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function carregarDisciplinasETurmas() {
+        const idProfessor = localStorage.getItem("id_professor");
+        if (!idProfessor) {
+          console.error("ID do professor não encontrado!");
+          return;
+        }
+
+        try {
+          // Primeira requisição: obter as turmas associadas ao professor
+          const turmasResponse = await fetch(
+            `http://localhost:5005/professores-turma/p/${idProfessor}`
+          );
+          const turmas = await turmasResponse.json();
+
+          // Preencher o select de turmas
+          const selectTurma = document.getElementById("turma_id_atividade");
+          selectTurma.innerHTML = ""; // Limpa o select antes de adicionar novas opções
+
+          for (const turma of turmas) {
+            // Obter o nome da turma usando o id_turma
+            const turmaResponse = await fetch(
+              `http://localhost:5005/turmas/${turma.id_turma}`
+            );
+            const turmaData = await turmaResponse.json();
+
+            const option = document.createElement("option");
+            option.value = turma.id_turma;
+            option.textContent = turmaData[0].nome_turma; // Nome da turma
+            selectTurma.appendChild(option);
+          }
+
+          // Segunda requisição: obter as disciplinas associadas ao professor
+          const disciplinasResponse = await fetch(
+            `http://localhost:5005/professores-disciplina/p/${idProfessor}`
+          );
+          const disciplinas = await disciplinasResponse.json();
+
+          // Preencher o select de disciplinas
+          const selectDisciplina = document.getElementById("disciplina_id_atividade");
+          selectDisciplina.innerHTML = ""; // Limpa o select antes de adicionar novas opções
+
+          for (const disciplina of disciplinas) {
+            // Obter o nome da disciplina usando o id_disciplina
+            const disciplinaResponse = await fetch(
+              `http://localhost:5005/disciplinas/${disciplina.id_disciplina}`
+            );
+            const disciplinaData = await disciplinaResponse.json();
+
+            const option = document.createElement("option");
+            option.value = disciplina.id_disciplina;
+            option.textContent = disciplinaData[0].nome_disciplina; // Nome da disciplina
+            selectDisciplina.appendChild(option);
+          }
+
+        } catch (error) {
+          console.error("Erro ao carregar turmas e disciplinas:", error);
+        }
+      }
+
+      // Carregar turmas e disciplinas assim que a página for carregada
+      window.onload = carregarDisciplinasETurmas;
+
+      document
+        .getElementById("formCriarAtividade")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          // Coletar os dados do formulário
+          const idProfessor = localStorage.getItem("id_professor");
+          const idTurma = document.getElementById("turma_id_atividade").value;
+          const idDisciplina = document.getElementById("disciplina_id_atividade").value;
+          const titulo = document.getElementById("titulo_atividade").value;
+          const descricao = document.getElementById("descricao_atividade").value;
+          const dataAtividade = document.getElementById("data_atividade").value;
+          const dificuldade = document.getElementById("dificuldade_atividade").value;
+
+          // Dados a serem enviados para a API
+          const novaAtividade = {
+            id_disciplina: idDisciplina,
+            id_turma: idTurma,
+            id_professor: idProfessor,
+            titulo: titulo,
+            descricao: descricao,
+            data_atividade: dataAtividade,
+            dificuldade: dificuldade,
+          };
+
+          try {
+            // Enviar os dados para a API
+            const response = await fetch("http://localhost:5005/atividades", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(novaAtividade),
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              alert("Atividade criada com sucesso!");
+              // Limpar o formulário após sucesso
+              document.getElementById("formCriarAtividade").reset();
+            } else {
+              const error = await response.json();
+              alert(`Erro ao criar atividade: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao criar atividade:", error);
+            alert("Erro ao criar atividade.");
+          }
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Professor</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Atividades Criadas</h5>
+        </div>
+        <div class="card-body">
+          <table class="table" id="tabelaAtividadesCriadas">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Data de Entrega</th>
+                <th>Dificuldade</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Atividades criadas serão carregadas aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>    
+
+      <!-- Modal de Edição -->
+      <div class="modal" id="modalEditar" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Atividade</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="formEditarAtividade">
+                <div class="form-group">
+                  <label for="titulo_atividade_edit">Título</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="titulo_atividade_edit"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="descricao_atividade_edit">Descrição</label>
+                  <textarea
+                    class="form-control"
+                    id="descricao_atividade_edit"
+                    required
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="data_atividade_edit">Data de Entrega</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="data_atividade_edit"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="dificuldade_atividade_edit">Dificuldade</label>
+                  <select class="form-control" id="dificuldade_atividade_edit" required>
+                    <option value="Fácil">Fácil</option>
+                    <option value="Médio">Médio</option>
+                    <option value="Difícil">Difícil</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Função para formatar a data no formato 'DD/MM/YYYY'
+      function formatarData(data) {
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const dataObj = new Date(data);
+        return dataObj.toLocaleDateString('pt-BR', options);
+      }
+
+      // Carregar as atividades criadas pelo professor
+      async function carregarAtividadesCriadas() {
+        const idProfessor = localStorage.getItem("id_professor"); 
+        if (!idProfessor) {
+          console.error("ID do professor não encontrado!");
+          return;
+        }
+
+        try {
+          // Fazendo a requisição para obter as atividades do professor
+          const response = await fetch(`http://localhost:5005/atividades/${idProfessor}`);
+          const atividades = await response.json();
+
+          // Obter o corpo da tabela onde as atividades serão inseridas
+          const tabelaBody = document.querySelector("#tabelaAtividadesCriadas tbody");
+          tabelaBody.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
+
+          // Adiciona as atividades à tabela
+          atividades.forEach((atividade, index) => {
+            const row = document.createElement("tr");
+
+            // Preenchendo a linha com os dados da atividade
+            row.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${atividade.titulo}</td>
+              <td>${atividade.descricao}</td>
+              <td>${formatarData(atividade.data_atividade)}</td>
+              <td>${atividade.dificuldade}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="editarAtividade(${atividade.id_atividade})">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="excluirAtividade(${atividade.id_atividade})">Excluir</button>
+              </td>
+            `;
+
+            // Adiciona a linha à tabela
+            tabelaBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar as atividades:", error);
+        }
+      }
+
+      // Função para abrir o modal e preencher os campos com os dados da atividade
+      async function editarAtividade(idAtividade) {
+        const response = await fetch(`http://localhost:5005/atividades/${idAtividade}`);
+        const atividade = await response.json();
+
+        // Preencher os campos do formulário de edição
+        document.getElementById("titulo_atividade_edit").value = atividade.titulo;
+        document.getElementById("descricao_atividade_edit").value = atividade.descricao;
+        document.getElementById("data_atividade_edit").value = atividade.data_atividade.split("T")[0]; // Formatar para YYYY-MM-DD
+        document.getElementById("dificuldade_atividade_edit").value = atividade.dificuldade;
+
+        // Abrir o modal de edição
+        $('#modalEditar').modal('show');
+
+        // Salvar a edição ao submeter o formulário
+        document.getElementById("formEditarAtividade").onsubmit = async (event) => {
+          event.preventDefault();
+
+          const titulo = document.getElementById("titulo_atividade_edit").value;
+          const descricao = document.getElementById("descricao_atividade_edit").value;
+          const dataAtividade = document.getElementById("data_atividade_edit").value;
+          const dificuldade = document.getElementById("dificuldade_atividade_edit").value;
+
+          const atividadeEditada = {
+            titulo,
+            descricao,
+            data_atividade: dataAtividade,
+            dificuldade
+          };
+
+          try {
+            const response = await fetch(`http://localhost:5005/atividades/${idAtividade}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(atividadeEditada)
+            });
+
+            if (response.ok) {
+              alert("Atividade atualizada com sucesso!");
+              $('#modalEditar').modal('hide'); // Fechar o modal
+              carregarAtividadesCriadas(); // Recarregar a tabela
+            } else {
+              const error = await response.json();
+              alert(`Erro ao atualizar atividade: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao atualizar atividade:", error);
+            alert("Erro ao atualizar atividade.");
+          }
+        };
+      }
+
+      // Função para excluir uma atividade
+      async function excluirAtividade(idAtividade) {
+        const confirmar = confirm("Tem certeza que deseja excluir essa atividade?");
+        if (confirmar) {
+          try {
+            const response = await fetch(`http://localhost:5005/atividades/${idAtividade}`, {
+              method: "DELETE",
+            });
+
+            if (response.ok) {
+              alert("Atividade excluída com sucesso!");
+              carregarAtividadesCriadas(); // Recarregar a tabela
+            } else {
+              const error = await response.json();
+              alert(`Erro ao excluir atividade: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao excluir a atividade:", error);
+            alert("Erro ao excluir a atividade.");
+          }
+        }
+      }
+
+      // Carregar as atividades assim que a página for carregada
+      window.onload = carregarAtividadesCriadas;
+    </script>
+
+    <!-- Scripts necessários para o modal -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

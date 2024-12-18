@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Professor</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Registros de Atividades Entregues</h5>
+        </div>
+        <div class="card-body">
+          <table class="table" id="tabelaRegistrosAtividades">
+            <thead>
+              <tr>
+                <th>Nome do Aluno</th>
+                <th>Disciplina</th>
+                <th>Atividade</th>
+                <th>Dificuldade sentida</th>
+                <!-- Dificuldade -->
+                <th>tempo gasto</th>
+                <!-- Em minutos -->
+                <th>Comentário de Dificuldade</th>
+                <th>Atividade anexada</th>
+                <!-- Donwload-->
+                <th>Entregou no prazo</th>
+                <!-- Sim ou não -->
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Registros de atividades entregues serão carregados aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Atribuir Notas e Feedback</h5>
+        </div>
+        <div class="card-body">
+          <form id="formAtribuirFeedback">
+            <div class="form-group">
+              <label for="id_atividade_feedback">Selecione a Atividade</label>
+              <select class="form-control" id="id_atividade_feedback" required>
+                <!-- Atividades serão carregadas aqui -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="id_aluno_feedback">Selecione o Aluno</label>
+              <select class="form-control" id="id_aluno_feedback" required>
+                <!-- Alunos serão carregados aqui -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="nota_feedback">Nota</label>
+              <input
+                type="number"
+                class="form-control"
+                id="nota_feedback"
+                required
+                min="0"
+                max="10"
+              />
+            </div>
+            <div class="form-group">
+              <label for="feedback_professor">Feedback</label>
+              <textarea
+                class="form-control"
+                id="feedback_professor"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Atribuir Nota e Feedback
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const idProfessor = localStorage.getItem("id_professor");
+
+      // Função para carregar atividades e alunos
+      async function carregarAtividadesEAlunos() {
+        if (!idProfessor) {
+          console.error("ID do professor não encontrado!");
+          return;
+        }
+
+        try {
+          // Carregar as atividades do professor
+          const atividadesResponse = await fetch(
+            `http://localhost:5005/atividades/${idProfessor}`
+          );
+          const atividades = await atividadesResponse.json();
+
+          const atividadesSelect = document.getElementById(
+            "id_atividade_feedback"
+          );
+          atividadesSelect.innerHTML =
+            "<option value='' disabled selected>Selecione a Atividade</option>";
+
+          atividades.forEach((atividade) => {
+            const option = document.createElement("option");
+            option.value = atividade.id_atividade;
+            option.textContent = atividade.titulo;
+            atividadesSelect.appendChild(option);
+          });
+
+          // Carregar os alunos (substitua a URL com a sua rota real)
+          const alunosResponse = await fetch(`http://localhost:5005/alunos`);
+          const alunos = await alunosResponse.json();
+          console.log(alunos);
+          const alunosSelect = document.getElementById("id_aluno_feedback");
+          alunosSelect.innerHTML =
+            "<option value='' disabled selected>Selecione o Aluno</option>";
+
+          alunos.forEach((aluno) => {
+            const option = document.createElement("option");
+            option.value = aluno.id_usuario;
+            option.textContent = aluno.nome_completo;
+            alunosSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar atividades e alunos:", error);
+        }
+      }
+
+      // Enviar feedback e nota para o backend
+      document
+        .getElementById("formAtribuirFeedback")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const idAtividade = document.getElementById(
+            "id_atividade_feedback"
+          ).value;
+          const idAluno = document.getElementById("id_aluno_feedback").value;
+          const nota = document.getElementById("nota_feedback").value;
+          const feedbackProfessor =
+            document.getElementById("feedback_professor").value;
+
+          // Enviar dados para o servidor
+          try {
+            const response = await fetch("http://localhost:5005/desempenho", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id_aluno: idAluno,
+                id_disciplina: 1, // Substitua com o ID da disciplina conforme necessário
+                id_atividade: idAtividade,
+                nota: nota,
+                feedback_professor: feedbackProfessor,
+              }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              alert("Nota e Feedback atribuídos com sucesso!");
+              document.getElementById("formAtribuirFeedback").reset(); // Limpar o formulário
+            } else {
+              alert(`Erro: ${result.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao enviar desempenho:", error);
+            alert("Erro ao atribuir nota e feedback.");
+          }
+        });
+
+      // Carregar as atividades e alunos ao carregar a página
+      window.onload = carregarAtividadesEAlunos;
+
+      // Função para carregar turmas, disciplinas e atividades
+      async function carregarTurmasEDisciplinas() {
+        try {
+          // Carregar turmas
+          const turmasResponse = await fetch(`http://localhost:5005/turmas`);
+          const turmas = await turmasResponse.json();
+
+          // Carregar disciplinas
+          const disciplinasResponse = await fetch(
+            `http://localhost:5005/disciplinas`
+          );
+          const disciplinas = await disciplinasResponse.json();
+
+          // Carregar a tabela de Disciplinas e Turmas
+          const tabela = document
+            .getElementById("tabelaDisciplinasTurmas")
+            .getElementsByTagName("tbody")[0];
+          tabela.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
+
+          // Iterar sobre as turmas e disciplinas para associá-las
+          turmas.forEach((turma) => {
+            disciplinas.forEach((disciplina) => {
+              // Inserir linha na tabela para cada associação
+              const row = tabela.insertRow();
+              row.insertCell(
+                0
+              ).textContent = `${turma.id_turma}-${disciplina.id_disciplina}`;
+              row.insertCell(1).textContent = turma.nome_turma;
+              row.insertCell(2).textContent = disciplina.nome_disciplina;
+            });
+          });
+          const turmaSelect = document.getElementById("turma_id_atividade");
+          turmaSelect.innerHTML = ""; // Limpa o select antes de adicionar as opções
+          turmas.forEach((turma) => {
+            const option = document.createElement("option");
+            option.value = turma.id_turma;
+            option.textContent = turma.nome_turma;
+            turmaSelect.appendChild(option);
+          });
+
+          // Preenche o select de disciplinas
+          const disciplinaSelect = document.getElementById(
+            "disciplina_id_atividade"
+          );
+          disciplinaSelect.innerHTML = ""; // Limpa o select antes de adicionar as opções
+          disciplinas.forEach((disciplina) => {
+            const option = document.createElement("option");
+            option.value = disciplina.id_disciplina;
+            option.textContent = disciplina.nome_disciplina;
+            disciplinaSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error(
+            "Erro ao carregar dados de turmas e disciplinas:",
+            error
+          );
+        }
+      }
+      document
+        .getElementById("formCriarAtividade")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          // Coletar os dados do formulário
+          const idTurma = document.getElementById("turma_id_atividade").value;
+          const idDisciplina = document.getElementById(
+            "disciplina_id_atividade"
+          ).value;
+          const titulo = document.getElementById("titulo_atividade").value;
+          const descricao = document.getElementById(
+            "descricao_atividade"
+          ).value;
+          const dataAtividade = document.getElementById("data_atividade").value;
+          const dificuldade = document.getElementById(
+            "dificuldade_atividade"
+          ).value;
+
+          // Dados a serem enviados para a API
+          const novaAtividade = {
+            id_disciplina: idDisciplina,
+            id_turma: idTurma,
+            id_professor: idProfessor,
+            titulo: titulo,
+            descricao: descricao,
+            data_atividade: dataAtividade,
+            dificuldade: dificuldade,
+          };
+
+          try {
+            // Enviar os dados para a API
+            const response = await fetch("http://localhost:5005/atividades", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(novaAtividade),
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              alert("Atividade criada com sucesso!");
+              // Limpar o formulário após sucesso
+              document.getElementById("formCriarAtividade").reset();
+            } else {
+              const error = await response.json();
+              alert(`Erro ao criar atividade: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao criar atividade:", error);
+            alert("Erro ao criar atividade.");
+          }
+        });
+      function carregarAtividades() {
+        // Substitua por um valor dinâmico, como o id do professor logado
+        const url = `http://localhost:5005/atividades/${idProfessor}`; // Requisição para a API com o id do professor
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((atividades) => {
+            const tabelaBody = document.querySelector(
+              "#tabelaAtividadesCriadas tbody"
+            );
+            tabelaBody.innerHTML = ""; // Limpa o conteúdo da tabela antes de adicionar os novos dados
+
+            // Função para formatar a data
+            function formatarData(dataIso) {
+              const data = new Date(dataIso);
+              const dia = String(data.getDate()).padStart(2, "0");
+              const mes = String(data.getMonth() + 1).padStart(2, "0"); // Meses começam do 0
+              const ano = data.getFullYear();
+              return `${dia}/${mes}/${ano}`;
+            }
+
+            // Adiciona cada atividade na tabela
+            atividades.forEach((atividade, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${atividade.titulo}</td>
+                    <td>${atividade.descricao}</td>
+                    <td>${formatarData(
+                      atividade.data_atividade
+                    )}</td> <!-- Formatação da data -->
+                    <td>${atividade.dificuldade}</td>
+                    <td>
+                        <button class="btn btn-info">Editar</button>
+                        <button class="btn btn-danger">Excluir</button>
+                    </td>
+                `;
+              tabelaBody.appendChild(row);
+            });
+          })
+          .catch((error) => {
+            console.error("Erro ao carregar as atividades:", error);
+          });
+      }
+      function atribuirNotaFeedback(event) {
+        event.preventDefault(); // Previne o comportamento padrão do formulário
+
+        const id_atividade = document.getElementById(
+          "id_atividade_feedback"
+        ).value;
+        const id_aluno = document.getElementById("id_aluno_feedback").value;
+        const nota = document.getElementById("nota_feedback").value;
+        const feedback_professor =
+          document.getElementById("feedback_professor").value;
+
+        const dados = {
+          id_atividade: id_atividade,
+          id_aluno: id_aluno,
+          nota: parseFloat(nota),
+          feedback_professor: feedback_professor,
+        };
+
+        const url = `http://localhost:5005/desempenho`; // Requisição para a API de desempenho
+
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dados),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Nota e Feedback atribuídos com sucesso!");
+            // Limpar o formulário após o envio
+            document.getElementById("formAtribuirFeedback").reset();
+          })
+          .catch((error) => {
+            console.error("Erro ao atribuir nota e feedback:", error);
+          });
+      }
+
+      // Chama a função para carregar turmas, disciplinas, atividades
+
+      // Chama a função para carregar as atividades ao carregar a página
+      window.onload = carregarAtividades;
+      carregarTurmasEDisciplinas();
+    </script>
+
+    <!-- Scripts necessários para o Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
